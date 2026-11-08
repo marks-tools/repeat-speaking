@@ -1,0 +1,1793 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Repeat / Speaking — リピスラ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7f4; --surface:#ffffff; --surface2:#eef3ef; --ink:#1c2420; --ink2:#5a665f;
+  --line:#dde3dc; --brand:#0e6e5c; --brand-dark:#0a5747; --brand-soft:#dff0e9;
+  --accent:#e4572e; --accent-soft:#fdeae3; --gold:#b98a12; --gold-soft:#faf0d2;
+  --ok:#0e6e5c; --warn:#9a6a00; --bad:#b3372a;
+  --radius:18px; --shadow:0 10px 30px rgba(20,40,32,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121714; --surface:#1c2320; --surface2:#242d29; --ink:#eef2ee; --ink2:#a7b3ab;
+    --line:#333e38; --brand:#3cbfa4; --brand-dark:#7fd8c3; --brand-soft:#173c33;
+    --accent:#ff8a5f; --accent-soft:#47271c; --gold:#e3bc55; --gold-soft:#40350f;
+    --ok:#3cbfa4; --warn:#e3bc55; --bad:#ff8a7a; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,sans-serif;line-height:1.65}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px calc(28px + env(safe-area-inset-bottom))}
+.screen{display:none}
+.screen.on{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.screen.on{animation:none}.mic.pulse{animation:none}}
+
+/* header */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 2px 6px}
+.wordmark{font-family:"Sora",sans-serif;font-weight:800;font-size:19px;letter-spacing:.02em}
+.wordmark span{color:var(--brand)}
+.iconbtn{width:42px;height:42px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-size:19px}
+.hero{padding:10px 2px 4px}
+.hero h1{font-size:15px;margin:0;color:var(--brand);font-weight:700;letter-spacing:.14em}
+.hero .big{font-size:27px;font-weight:900;line-height:1.35;margin:6px 0 4px}
+.hero p{margin:0;color:var(--ink2);font-size:14px}
+.stat-strip{display:flex;gap:10px;margin:16px 0 4px}
+.stat{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;text-align:center}
+.stat b{display:block;font-size:20px;font-family:"Sora",sans-serif}
+.stat small{color:var(--ink2);font-size:11px}
+
+/* mode cards */
+.mode-list{display:grid;gap:12px;margin-top:14px}
+.mode-card{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.mode-card:active{transform:scale(.99)}
+.mode-num{flex:none;width:44px;height:44px;border-radius:13px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-family:"Sora",sans-serif;font-weight:800;font-size:17px}
+.mode-card.accent .mode-num{background:var(--accent-soft);color:var(--accent)}
+.mode-card h2{font-size:17px;margin:1px 0 2px;font-weight:700}
+.mode-card p{margin:0;font-size:13px;color:var(--ink2)}
+.mode-card .chev{margin-left:auto;color:var(--ink2);font-size:20px;line-height:1.4}
+.sub-row{display:flex;gap:10px;margin-top:12px}
+.sub-btn{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px;font-weight:700;font-size:14px}
+.note{font-size:12px;color:var(--ink2);margin-top:14px}
+
+/* generic */
+.backrow{display:flex;align-items:center;gap:10px;padding:16px 0 4px}
+.backbtn{width:40px;height:40px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:18px;display:grid;place-items:center}
+.screen-title{font-size:21px;font-weight:900;margin:0}
+.screen-sub{color:var(--ink2);font-size:13px;margin:2px 0 0}
+.chip-grid{display:grid;gap:10px;margin-top:16px}
+.pick{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.pick b{font-size:15px}
+.pick small{display:block;color:var(--ink2);font-size:12px;font-weight:400}
+.pick .cnt{font-family:"Sora",sans-serif;color:var(--brand);font-weight:700;font-size:13px;white-space:nowrap}
+.field{margin-top:18px}
+.field>label{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:14px;font-weight:500}
+.seg button.sel{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+@media (prefers-color-scheme: dark){.seg button.sel{color:#0c1512}}
+.primary-btn{display:block;width:100%;background:var(--brand);color:#fff;font-weight:800;font-size:16px;border-radius:15px;padding:15px;margin-top:22px}
+.primary-btn:disabled{opacity:.45}
+.ghost-btn{display:block;width:100%;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:15px;border-radius:15px;padding:13px;margin-top:10px}
+.danger-btn{color:var(--bad)}
+
+/* practice */
+.progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
+.progress-head .mode-name{font-weight:800;font-size:15px}
+.progress-head .count{font-family:"Sora",sans-serif;color:var(--ink2);font-size:14px}
+.progressbar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-top:8px}
+.progressbar i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .35s ease}
+.prompt-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 20px 22px;margin-top:16px;text-align:center}
+.prompt-label{font-size:12px;letter-spacing:.16em;color:var(--brand);font-weight:700}
+.prompt-ja{font-size:25px;font-weight:900;line-height:1.5;margin:12px 0 8px}
+.prompt-ctx{font-size:13px;color:var(--ink2);margin:0}
+.mic-zone{margin-top:22px;text-align:center}
+.mic{width:96px;height:96px;border-radius:50%;background:var(--brand);color:#fff;font-size:40px;display:grid;place-items:center;margin:0 auto;box-shadow:0 12px 26px rgba(14,110,92,.35)}
+.mic.listening{background:var(--accent);animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.mic-state{margin-top:12px;font-size:14px;font-weight:700;min-height:24px}
+.mic-state small{display:block;font-weight:400;color:var(--ink2);font-size:12px}
+.tool-row{display:flex;gap:10px;margin-top:18px}
+.tool-row button{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 6px;font-weight:700;font-size:14px}
+.tool-row button:disabled{opacity:.4}
+.hint-box{display:none;background:var(--gold-soft);border:1px solid var(--gold);border-radius:14px;padding:14px 16px;margin-top:16px;font-size:15px}
+.hint-box.on{display:block}
+.hint-box .h-label{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--warn)}
+.hint-box .h-body{margin-top:4px;font-weight:700;word-break:break-word}
+.text-input-zone{display:none;margin-top:16px}
+.text-input-zone.on{display:block}
+.text-input-zone textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px;font:inherit;font-size:16px;background:var(--surface);color:var(--ink);min-height:76px;resize:vertical}
+.err-box{display:none;background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);border-radius:14px;padding:13px 15px;margin-top:16px;font-size:14px}
+.err-box.on{display:block}
+
+/* result */
+.verdict{border-radius:var(--radius);padding:20px;margin-top:16px;text-align:center;border:1px solid var(--line);background:var(--surface)}
+.verdict.ok{background:var(--brand-soft);border-color:var(--brand)}
+.verdict.un{background:var(--gold-soft);border-color:var(--gold)}
+.verdict .v-icon{font-size:34px;line-height:1}
+.verdict h2{margin:6px 0 2px;font-size:21px}
+.verdict p{margin:0;font-size:13px;color:var(--ink2)}
+.your-answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:14px}
+.your-answer small{color:var(--ink2);font-size:12px;font-weight:700;letter-spacing:.08em}
+.your-answer .ans{font-size:18px;font-weight:700;margin-top:2px;word-break:break-word}
+.model-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:14px;box-shadow:var(--shadow)}
+.model-head{display:flex;justify-content:space-between;align-items:center}
+.model-head b{font-size:13px;letter-spacing:.1em;color:var(--brand)}
+.toggle{display:flex;background:var(--surface2);border-radius:99px;padding:3px}
+.toggle button{border-radius:99px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ink2)}
+.toggle button.sel{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.model-sentence{font-size:21px;font-weight:800;line-height:1.55;margin:12px 0 4px;word-break:break-word}
+.chunk-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chunk{border:1.5px solid var(--brand);color:var(--brand-dark);background:var(--brand-soft);border-radius:12px;padding:9px 12px;font-weight:700;font-size:16px;text-align:left}
+.chunk small{display:block;font-weight:500;font-size:12px;color:var(--ink2)}
+.chunk .chunk-ja{display:none;margin-top:3px;font-size:13px;color:var(--ink);font-weight:500}
+.chunk.open .chunk-ja{display:block}
+.explain{font-size:13px;color:var(--ink2);margin-top:12px}
+.listen-row{display:flex;gap:10px;margin-top:14px}
+.listen-row button{flex:1;border-radius:12px;padding:12px;font-weight:700;font-size:14px;background:var(--surface2);border:1px solid var(--line)}
+.result-actions{margin-top:18px}
+.ai-box{display:none;background:var(--surface);border:1px dashed var(--brand);border-radius:14px;padding:14px 16px;margin-top:14px}
+.ai-box.on{display:block}
+.ai-box textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:12.5px;background:var(--bg);color:var(--ink)}
+.ai-links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ai-links a{flex:1;text-align:center;text-decoration:none;background:var(--brand);color:#fff;font-weight:700;font-size:13px;border-radius:10px;padding:10px 4px}
+@media (prefers-color-scheme: dark){.ai-links a{color:#0c1512}}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+/* summary & records */
+.score-hero{text-align:center;padding:26px 10px 6px}
+.score-hero .score{font-family:"Sora",sans-serif;font-size:52px;font-weight:800;color:var(--brand);line-height:1}
+.score-hero p{color:var(--ink2);margin:6px 0 0;font-size:14px}
+.review-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-top:10px}
+.review-item .r-ja{font-weight:700;font-size:14px}
+.review-item .r-en{font-size:14px;color:var(--ink2)}
+.badge{display:inline-block;font-size:11px;font-weight:800;border-radius:99px;padding:2px 9px;margin-right:6px;vertical-align:1px}
+.badge.ok{background:var(--brand-soft);color:var(--brand)}
+.badge.un{background:var(--gold-soft);color:var(--warn)}
+.badge.hint{background:var(--accent-soft);color:var(--accent)}
+.mastery-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 15px;margin-top:9px}
+.mastery-row b{font-size:14px}
+.stars{color:var(--gold);font-size:15px;letter-spacing:2px;white-space:nowrap}
+.stars small{color:var(--ink2);letter-spacing:0;font-size:11px;margin-left:6px}
+.empty-box{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--ink2);font-size:14px;margin-top:14px}
+.file-label{display:block;width:100%;text-align:center;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:15px;border-radius:15px;padding:13px;margin-top:10px;cursor:pointer}
+select,input[type="text"]{font:inherit}
+.foot{margin-top:26px;text-align:center;color:var(--ink2);font-size:11px}
+
+/* v1.2: 実力テスト・コース */
+.test-card{display:block;width:100%;text-align:left;background:var(--brand);color:#fff;border-radius:var(--radius);padding:18px;margin-top:16px;box-shadow:var(--shadow)}
+.test-card h2{margin:0 0 4px;font-size:19px}
+.test-card p{margin:0;font-size:13px;opacity:.92}
+.test-card .tc-badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-bottom:8px}
+@media (prefers-color-scheme: dark){.test-card{color:#0c1512}.test-card .tc-badge{background:rgba(0,0,0,.18)}}
+.policy-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px 10px;margin-top:14px}
+.policy-box .po-label{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--brand)}
+.policy-box ul{margin:8px 0 6px;padding-left:19px}
+.policy-box li{font-size:13.5px;margin-bottom:6px}
+.policy-box li b{color:var(--brand-dark)}
+.rank-box{background:var(--surface);border:1px solid var(--brand);border-radius:var(--radius);padding:16px 18px;margin-top:14px}
+.rank-box .r-label{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--brand)}
+.rank-box .r-name{font-size:22px;font-weight:900;margin:2px 0}
+.rank-box p{margin:4px 0 0;font-size:13px;color:var(--ink2)}
+.week-card{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow)}
+.week-card:active{transform:scale(.99)}
+.week-card.rec{border-color:var(--brand);border-width:2px}
+.week-num{flex:none;width:46px;height:46px;border-radius:13px;background:var(--surface2);color:var(--ink2);display:grid;place-items:center;font-family:"Sora",sans-serif;font-weight:800;font-size:13px;text-align:center;line-height:1.15}
+.week-card.rec .week-num{background:var(--brand-soft);color:var(--brand)}
+.week-card.main-week .week-num{background:var(--accent-soft);color:var(--accent)}
+.week-card h3{font-size:16px;margin:1px 0 2px;font-weight:700}
+.week-card p{margin:0;font-size:12.5px;color:var(--ink2)}
+.week-card .rec-tag{font-size:11px;font-weight:800;color:var(--brand)}
+.section-head{font-size:15px;font-weight:900;margin:24px 0 2px}
+.section-sub{font-size:12.5px;color:var(--ink2);margin:0}
+.scene-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.scene-row button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;font-size:14px;font-weight:600}
+.scene-row button.sel{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+@media (prefers-color-scheme: dark){.scene-row button.sel{color:#0c1512}}
+.diag-grid{display:grid;gap:10px;margin-top:12px}
+.diag-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.diag-card b{font-size:14px}
+.diag-card .d-meter{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:8px 0 6px}
+.diag-card .d-meter i{display:block;height:100%;background:var(--brand)}
+.diag-card p{margin:0;font-size:12.5px;color:var(--ink2)}
+.chunk-tag{display:inline-block;font-size:11px;font-weight:800;background:var(--gold-soft);color:var(--warn);border-radius:99px;padding:2px 9px;margin:0 4px 4px 0}
+.fchunk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.fchunk .fc-en{font-size:17px;font-weight:800}
+.fchunk .fc-cat{font-size:11px;font-weight:800;color:var(--brand);letter-spacing:.06em}
+.fchunk .fc-ex{font-size:13.5px;margin-top:6px}
+.fchunk .fc-ex small{display:block;color:var(--ink2);font-size:12px}
+.verb-table{width:100%;border-collapse:collapse;margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.verb-table th,.verb-table td{padding:9px 11px;font-size:13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.verb-table th{background:var(--surface2);font-size:12px}
+.verb-table tr:last-child td{border-bottom:none}
+.vtype{font-family:"Sora",sans-serif;font-weight:800;font-size:11px;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.vtype.sv{background:var(--brand-soft);color:var(--brand)}
+.vtype.svc{background:var(--gold-soft);color:var(--warn)}
+.vtype.svo{background:var(--accent-soft);color:var(--accent)}
+.stage-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 15px;margin-top:8px;font-size:14px}
+.stage-row .s-score{font-family:"Sora",sans-serif;font-weight:700;color:var(--brand);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- S01 ホーム -->
+  <section class="screen on" id="scr-home">
+    <div class="topbar">
+      <div class="wordmark">Repeat <span>/</span> Speaking</div>
+      <button class="iconbtn" id="btn-home-settings" aria-label="設定">⚙️</button>
+    </div>
+    <div class="hero">
+      <h1>リピスラ ・ コース版 v1.3</h1>
+      <div class="big">一文を作って、<br>つないで伸ばす。</div>
+      <p>まず10問の実力テストで現在地を測り、「週（文法の変換）」×「編（場面）」のコースで同じ動詞を繰り返し使います。第1〜4週で一文・一チャンクの土台を作り、後ろへチャンクを繋ぐ「つなぐ編」がメインです。判定は甘めで、先の週へいつでも前倒しできます。v1.3では動詞112語の台帳から主語と形を組み合わせて出題する「動詞ドリル（特訓）」が加わり、コース問題にも主語の差し替えが入りました。</p>
+    </div>
+    <div class="policy-box">
+      <div class="po-label">進み方の決めごと</div>
+      <ul>
+        <li><b>判定は甘めです。</b>現在形は「ある程度言える」を前提にし、完璧でなくても先へ進めます。</li>
+        <li><b>前倒しは自由です。</b>第1週の途中からでも過去形や疑問形の週へ進んで構いません。第2週以降も同じで、週にロックはありません。</li>
+        <li><b>三単現の -s だけでは落としません。</b>-s は意味の手がかりがなく音も弱いので、付いたかどうかで案外引っかかります。落ちた場合も、Does he plays? のような付け過ぎも、-s だけの違いなら正解として扱い、ドリルの反復で口に馴染ませていきます。</li>
+        <li><b>穴は後から回収します。</b>弱かった段階は、同じ動詞が姿を変えて戻ってくる螺旋の復習に混ぜて補います。</li>
+      </ul>
+    </div>
+    <button class="test-card" id="btn-placement">
+      <span class="tc-badge">入り口 ・ 10問</span>
+      <h2>🎯 実力テストを受ける</h2>
+      <p>現在形→疑問・否定→過去・進行形・未来→現在完了→つなぐ表現の順に10問出題し、ランクと「始める週」、苦手な段階をお返しします。前半はチャンクなしの素の文で、SVOの土台そのものも先に判定します。</p>
+    </button>
+    <div class="rank-box" id="rank-box" style="display:none">
+      <div class="r-label">あなたの現在地（仮置き）</div>
+      <div class="r-name" id="rank-name">—</div>
+      <p id="rank-detail"></p>
+      <button class="primary-btn" id="btn-rank-start" style="margin-top:12px">おすすめの週から始める ›</button>
+    </div>
+    <h3 class="section-head">コース（週 × 編）</h3>
+    <p class="section-sub">週は文法の変換の段階、編は場面です。同じ動詞・同じ文が週を進むごとに姿を変えて戻ってきます。ロックはありません。現在形がだいたい言えれば、途中から過去形・疑問形へ進んで構いません。</p>
+    <div class="mode-list" id="week-list"></div>
+    <h3 class="section-head">自由練習（従来モード）</h3>
+    <p class="section-sub">コースの合間に、型・時制・動詞をピンポイントで繰り返せます。</p>
+    <div class="stat-strip">
+      <div class="stat"><b id="stat-total">0</b><small>これまでの回答</small></div>
+      <div class="stat"><b id="stat-ok">0</b><small>自力で正解</small></div>
+      <div class="stat"><b id="stat-streak">0</b><small>今日の回答</small></div>
+    </div>
+    <div class="mode-list">
+      <button class="mode-card" data-mode="pattern">
+        <span class="mode-num">型</span>
+        <span><h2>型の練習</h2><p>同じ文型を繰り返して、型を体に入れます。</p></span>
+        <span class="chev">›</span>
+      </button>
+      <button class="mode-card" data-mode="tense">
+        <span class="mode-num">時</span>
+        <span><h2>時制の練習</h2><p>現在形・過去形・現在完了などを選んで練習します。現在完了は経験・完了／結果・継続に分かれます。</p></span>
+        <span class="chev">›</span>
+      </button>
+      <button class="mode-card" data-mode="verb">
+        <span class="mode-num">動</span>
+        <span><h2>動詞の練習</h2><p>基本動詞と頻出チャンク（make a decision など）を練習します。</p></span>
+        <span class="chev">›</span>
+      </button>
+      <button class="mode-card accent" id="btn-drill">
+        <span class="mode-num">特</span>
+        <span><h2>動詞ドリル（特訓）</h2><p>動詞112語 × 主語（I／you／he／she／we／they）× 形（現在・疑問・否定・過去・現在完了）を、その場で組み合わせて出題します。組み合わせは約<span id="combo-count">―</span>通りあり、同じ答えの丸暗記では回りません。主語が変われば am／is／are、三単現の -s、does／don't、has／have、his／her まで連動します。</p></span>
+        <span class="chev">›</span>
+      </button>
+      <button class="mode-card accent" data-mode="shuffle">
+        <span class="mode-num">混</span>
+        <span><h2>シャッフル</h2><p>時制・文型・動詞を混ぜて出題します。どの時制を使うかは事前に分かりません。</p></span>
+        <span class="chev">›</span>
+      </button>
+      <button class="mode-card accent" data-mode="weak">
+        <span class="mode-num">復</span>
+        <span><h2>苦手を復習</h2><p>ヒントを使った問題や未判定だった問題を優先して出題します。</p></span>
+        <span class="chev">›</span>
+      </button>
+    </div>
+    <div class="sub-row">
+      <button class="sub-btn" id="btn-goto-records">📊 学習記録</button>
+      <button class="sub-btn" id="btn-goto-settings">⚙️ 設定</button>
+    </div>
+    <div class="sub-row">
+      <button class="sub-btn" id="btn-goto-chunks">🧩 定番チャンク</button>
+      <button class="sub-btn" id="btn-goto-verbs">📚 動詞112語の台帳</button>
+    </div>
+    <p class="note" id="sr-note"></p>
+    <p class="foot">Repeat / Speaking（リピスラ）— Marks Tools ／ 姉妹アプリ：Magical / Reading（マジスラ）</p>
+  </section>
+
+  <!-- 選択画面（型・時制・動詞） -->
+  <section class="screen" id="scr-pick">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title" id="pick-title">選んでください</h2><p class="screen-sub" id="pick-sub"></p></div>
+    </div>
+    <div class="field">
+      <label>問題数</label>
+      <div class="seg" id="pick-count">
+        <button data-v="5">5問</button><button data-v="10" class="sel">10問</button><button data-v="20">20問</button>
+      </div>
+    </div>
+    <div class="chip-grid" id="pick-list"></div>
+  </section>
+
+  <!-- v1.3 動詞ドリル設定 -->
+  <section class="screen" id="scr-drill">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title">動詞ドリル（特訓）</h2><p class="screen-sub">動詞 × 主語 × 形をその場で組み合わせて出題します（1回10問）。</p></div>
+    </div>
+    <div class="field">
+      <label>レベル（使う形の広さ）</label>
+      <div class="seg" id="drill-level">
+        <button data-v="1">現在形のみ</button><button data-v="2">疑問・否定も</button><button data-v="3">過去形も</button><button data-v="4">現在完了も</button>
+      </div>
+      <p style="font-size:12px;color:var(--ink2);margin:6px 0 0">現在完了は、現在完了が自然な動詞だけで出題します。同じ動詞・同じ主語は続けて出ません。判定はいつもの甘め判定で、ヒント3段階も使えます。</p>
+    </div>
+    <div class="field">
+      <label>動詞</label>
+      <p style="font-size:15px;margin:0"><b id="drill-verb-name">ランダム（全動詞）</b></p>
+      <p style="font-size:12px;color:var(--ink2);margin:4px 0 0">特定の動詞を特訓したいときは、台帳から動詞を選んでください。その動詞だけを主語と形を変えて出題します。</p>
+      <button class="ghost-btn" id="btn-drill-pick">📚 台帳から動詞を選ぶ</button>
+      <button class="ghost-btn" id="btn-drill-random" style="display:none">ランダム（全動詞）に戻す</button>
+    </div>
+    <div class="empty-box" id="drill-combo">出題できる組み合わせ：約―通り</div>
+    <button class="primary-btn" id="btn-drill-start">特訓を始める（10問）›</button>
+  </section>
+
+  <!-- S03/S04 練習画面 -->
+  <section class="screen" id="scr-practice">
+    <div class="backrow">
+      <button class="backbtn" id="btn-quit" aria-label="やめる">←</button>
+      <div><h2 class="screen-title" style="font-size:17px">練習中</h2></div>
+    </div>
+    <div class="progress-head">
+      <span class="mode-name" id="p-mode-name">シャッフル</span>
+      <span class="count" id="p-count">1 / 10</span>
+    </div>
+    <div class="progressbar"><i id="p-bar" style="width:0%"></i></div>
+
+    <div id="phase-ask">
+      <div class="prompt-card">
+        <div class="prompt-label">日本語のお題</div>
+        <p class="prompt-ja" id="p-ja"></p>
+        <p class="prompt-ctx" id="p-ctx"></p>
+      </div>
+      <div class="mic-zone" id="mic-zone">
+        <button class="mic" id="btn-mic" aria-label="話す">🎤</button>
+        <div class="mic-state" id="mic-state">押して話す<small>英語で声に出して言ってみましょう</small></div>
+      </div>
+      <div class="err-box" id="recog-error"></div>
+      <div class="hint-box" id="hint-box"><div class="h-label" id="hint-label"></div><div class="h-body" id="hint-body"></div></div>
+      <div class="text-input-zone" id="text-zone">
+        <textarea id="text-answer" placeholder="英語で入力してください（例：I've seen that movie before.）" autocomplete="off"></textarea>
+        <button class="primary-btn" id="btn-text-submit" style="margin-top:12px">この回答で判定する</button>
+      </div>
+      <div class="tool-row">
+        <button id="btn-hint">💡 ヒント</button>
+        <button id="btn-text-toggle">⌨️ テキスト入力</button>
+        <button id="btn-skip">スキップ ›</button>
+      </div>
+    </div>
+
+    <div id="phase-result" style="display:none">
+      <div class="verdict" id="verdict">
+        <div class="v-icon" id="v-icon">🟢</div>
+        <h2 id="v-title">正解！</h2>
+        <p id="v-msg"></p>
+      </div>
+      <div class="your-answer">
+        <small>あなたの回答</small>
+        <div class="ans" id="r-your"></div>
+      </div>
+      <div class="model-card">
+        <div class="model-head">
+          <b>お手本</b>
+          <div class="toggle" role="group" aria-label="お手本の表示切替">
+            <button id="tg-normal" class="sel">通常</button>
+            <button id="tg-chunk">チャンク</button>
+          </div>
+        </div>
+        <div class="model-sentence" id="model-normal"></div>
+        <div class="chunk-wrap" id="model-chunks" style="display:none"></div>
+        <p class="explain" id="r-explain"></p>
+        <div class="listen-row">
+          <button id="btn-listen-full">🔊 お手本を聞く</button>
+          <button id="btn-listen-chunks">🔊 チャンクごとに聞く</button>
+        </div>
+      </div>
+      <div class="ai-box" id="ai-box">
+        <b style="font-size:14px">AIへの質問文</b>
+        <p style="font-size:12px;color:var(--ink2);margin:4px 0 8px">コピーして、使いたいAIに貼り付けてください。あなたの英文をできるだけ生かして添削するよう依頼する文面です。</p>
+        <textarea id="ai-text" readonly></textarea>
+        <button class="primary-btn" id="btn-copy-ai" style="margin-top:10px">📋 質問文をコピー</button>
+        <div class="ai-links">
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT を開く</a>
+          <a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini を開く</a>
+          <a href="https://claude.ai/" target="_blank" rel="noopener">Claude を開く</a>
+        </div>
+        <button class="ghost-btn" id="btn-register-answer">自分の回答を正解として登録する</button>
+      </div>
+      <div class="result-actions">
+        <button class="primary-btn" id="btn-next">次の問題へ ›</button>
+        <button class="ghost-btn" id="btn-retry">🔁 もう一度話す</button>
+        <button class="ghost-btn" id="btn-ai" style="display:none">💬 AIに相談する</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- コース：編の選択 -->
+  <section class="screen" id="scr-course">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title" id="course-title">第1週</h2><p class="screen-sub" id="course-sub"></p></div>
+    </div>
+    <div class="field">
+      <label>編（場面）を選ぶ</label>
+      <div class="scene-row" id="course-scenes"></div>
+      <p style="font-size:12px;color:var(--ink2);margin:8px 0 0">その週×編の問題が少ない場合は、近い場面の問題も混ぜて10問にそろえます。判定は甘めです。三単現の -s は、落ちても付け過ぎても、-s だけの違いなら正解として扱います（未判定にもしません）。週にロックはなく、第1週の途中から先の週へ進んでも構いません。</p>
+    </div>
+    <div class="field">
+      <label>問題数</label>
+      <div class="seg" id="course-count">
+        <button data-v="5">5問</button><button data-v="10" class="sel">10問</button><button data-v="20">20問</button>
+      </div>
+    </div>
+    <button class="primary-btn" id="btn-course-start">この週・編で始める ›</button>
+    <div id="course-preview"></div>
+  </section>
+
+  <!-- 定番チャンク -->
+  <section class="screen" id="scr-chunks">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title">定番チャンク</h2><p class="screen-sub">主語と動詞が違っても、何度も戻ってくる言い回しです。</p></div>
+    </div>
+    <p style="font-size:13.5px;margin:14px 0 0">チャンクは「覚えるもの」ではなく「何度も出会うもの」として扱います。コースの中で、同じ塊が別の文・別の編・別の週に最低5回は違う姿で登場するよう問題を組んであります。暗記テストはしません。文の中でヒントなしで3回言えたら「身についた」目安です。カードをタップすると音声で聞けます。</p>
+    <div id="fchunk-list"></div>
+  </section>
+
+  <!-- 動詞台帳 -->
+  <section class="screen" id="scr-verbs">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title">動詞112語の台帳</h2><p class="screen-sub">「英語でよく使う動詞100選」の111語に wake を加えた統合台帳です。</p></div>
+    </div>
+    <p style="font-size:13.5px;margin:14px 0 0">日常英会話で頻出の動詞を、SV型・SVC型・SVO型・特殊に分類し、過去形・過去分詞も並べました。各動詞には型文が1つあり、動詞ドリル（特訓）はこの型文を主語（I／you／he／she／we／they）と形（現在・疑問・否定・過去・現在完了）で組み替えて出題します。動詞の行をタップすると、その動詞だけの特訓に入れます。mind／let／thank のような特殊な構文の動詞は、無理に生成せず固定表現として載せています。</p>
+    <div id="verb-groups"></div>
+  </section>
+
+  <!-- S05 セット結果 -->
+  <section class="screen" id="scr-summary">
+    <div id="placement-result" style="display:none">
+      <div class="score-hero">
+        <div class="r-label" style="font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--brand)">実力テスト結果 ・ ランク（仮置き）</div>
+        <div class="score" id="pl-rank" style="font-size:34px;line-height:1.25">—</div>
+        <p id="pl-msg"></p>
+      </div>
+      <h3 style="margin:16px 0 2px;font-size:15px">段階ごとの結果</h3>
+      <div id="pl-stages"></div>
+      <div class="diag-grid">
+        <div class="diag-card"><b>土台（SVOそのもの）</b><p id="pl-base"></p></div>
+        <div class="diag-card"><b>チャンク（言い回しの塊）</b><p id="pl-chunk"></p></div>
+      </div>
+      <button class="primary-btn" id="btn-pl-start">おすすめの週から始める ›</button>
+      <button class="ghost-btn" id="btn-pl-week1">第1週から始める</button>
+    </div>
+    <div class="score-hero">
+      <div class="score" id="sum-score">0 / 10</div>
+      <p id="sum-msg">セットが終わりました。おつかれさまでした。</p>
+    </div>
+    <div id="sum-list"></div>
+    <button class="primary-btn" id="btn-again">もう1セット練習する</button>
+    <button class="ghost-btn" data-back="home">ホームに戻る</button>
+  </section>
+
+  <!-- S06 学習記録 -->
+  <section class="screen" id="scr-records">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title">学習記録</h2><p class="screen-sub">分野ごとの習熟度と、これまでの回答です。</p></div>
+    </div>
+    <h3 style="margin:20px 0 2px;font-size:15px">詰まりの見分け（2層の診断）</h3>
+    <p style="font-size:12.5px;color:var(--ink2);margin:4px 0 0">「チャンクで引っかかっている」のか「SVOそのもので詰まっている」のかを分けて見ます。対処が違うためです。土台が弱いのにチャンクを詰め込んでも伸びません。</p>
+    <div class="diag-grid" id="diag-grid">
+      <div class="diag-card"><b>① 土台層 ・ 素のSV／SVC／SVO</b><div class="d-meter"><i id="diag-base-bar" style="width:0%"></i></div><p id="diag-base-text">まだデータがありません。</p></div>
+      <div class="diag-card"><b>② チャンク層 ・ 塊を繋げる力</b><div class="d-meter"><i id="diag-chunk-bar" style="width:0%"></i></div><p id="diag-chunk-text">まだデータがありません。</p></div>
+    </div>
+    <h3 style="margin:20px 0 2px;font-size:15px">分野別の習熟度</h3>
+    <div id="mastery-list"></div>
+    <h3 style="margin:22px 0 2px;font-size:15px">最近の回答</h3>
+    <div id="histLog-list"></div>
+    <h3 style="margin:22px 0 2px;font-size:15px">バックアップ</h3>
+    <p style="font-size:13px;color:var(--ink2);margin:4px 0 0">学習記録と、登録した正解表現をJSONファイルで書き出し／読み込みできます。端末を変えるときの引き継ぎに使ってください。</p>
+    <button class="ghost-btn" id="btn-export">⬇ JSONをエクスポート</button>
+    <label class="file-label" for="import-file">⬆ JSONをインポート</label>
+    <input type="file" id="import-file" accept="application/json,.json" style="display:none">
+  </section>
+
+  <!-- S06 設定 -->
+  <section class="screen" id="scr-settings">
+    <div class="backrow">
+      <button class="backbtn" data-back="home" aria-label="戻る">←</button>
+      <div><h2 class="screen-title">設定</h2><p class="screen-sub">練習の進め方を調整します。</p></div>
+    </div>
+    <div class="field"><label>標準の問題数</label><div class="seg" data-setting="count"><button data-v="5">5問</button><button data-v="10">10問</button><button data-v="20">20問</button></div></div>
+    <div class="field"><label>難易度</label><div class="seg" data-setting="level"><button data-v="1">初級</button><button data-v="2">中級</button><button data-v="3">上級</button></div>
+      <p style="font-size:12px;color:var(--ink2);margin:6px 0 0">初級は選んだ分野の問題だけ、中級以上は近い時制の問題も混ざります。</p></div>
+    <div class="field"><label>回答方法</label><div class="seg" data-setting="input"><button data-v="voice">音声</button><button data-v="text">テキスト</button></div></div>
+    <div class="field"><label>ヒント</label><div class="seg" data-setting="hints"><button data-v="on">オン</button><button data-v="off">オフ</button></div></div>
+    <div class="field"><label>お手本の再生</label><div class="seg" data-setting="modelPlay"><button data-v="manual">手動</button><button data-v="auto">回答後に自動</button></div></div>
+    <div class="field"><label>正解後の進行</label><div class="seg" data-setting="advance"><button data-v="manual">手動</button><button data-v="auto">自動</button></div></div>
+    <div class="field"><label>音声の言語</label><div class="seg" data-setting="lang"><button data-v="en-US">アメリカ英語（en-US）</button><button data-v="en-GB">イギリス英語（en-GB）</button></div></div>
+    <button class="primary-btn" data-back="home">設定を閉じる</button>
+    <button class="ghost-btn danger-btn" id="btn-reset">学習記録をすべて消す</button>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ============ 問題データ（仕様書 §10 の構造） ============ */
+var QUESTIONS = [
+/* ---- 現在完了・経験 ---- */
+{id:"RS-PP-001",level:1,tense:"pp-exp",pattern:"have-past-participle",verb:"see",promptJa:"私はその映画を見たことがあります。",contextJa:"場面：友達に映画を見た経験を話しています。",primaryAnswer:"I've seen that movie before.",acceptedAnswers:["I've seen that movie before.","I have seen that movie before.","I've watched that movie before.","I have watched that movie before."],chunks:[{en:"I've seen that movie",ja:"その映画を見たことがあります"},{en:"before",ja:"以前に"}],hints:{structure:"S + have + 過去分詞 + O",pattern:"I've seen … / before.",full:"I've seen that movie / before."},explanation:"過去の特定の日ではなく、これまでの経験を表すので現在完了を使います。"},
+{id:"RS-PP-002",level:1,tense:"pp-exp",pattern:"have-been-to",verb:"go",promptJa:"私は京都に行ったことがあります。",contextJa:"場面：旅行の経験を話しています。",primaryAnswer:"I've been to Kyoto before.",acceptedAnswers:["I've been to Kyoto before.","I have been to Kyoto before.","I've been to Kyoto.","I've visited Kyoto before."],chunks:[{en:"I've been",ja:"行ったことがあります"},{en:"to Kyoto",ja:"京都へ"},{en:"before",ja:"以前に"}],hints:{structure:"S + have been to + 場所",pattern:"I've been / to … / before.",full:"I've been / to Kyoto / before."},explanation:"行って帰ってきた経験は have been to を使います。"},
+{id:"RS-PP-003",level:1,tense:"pp-exp",pattern:"have-never",verb:"eat",promptJa:"私は納豆を食べたことがありません。",contextJa:"場面：食の好みを話しています。",primaryAnswer:"I've never eaten natto.",acceptedAnswers:["I've never eaten natto.","I have never eaten natto.","I've never tried natto."],chunks:[{en:"I've never eaten",ja:"食べたことがありません"},{en:"natto",ja:"納豆を"}],hints:{structure:"S + have never + 過去分詞",pattern:"I've never eaten …",full:"I've never eaten natto."},explanation:"「〜したことがない」は have never + 過去分詞です。never は have の直後に置きます。"},
+{id:"RS-PP-004",level:1,tense:"pp-exp",pattern:"have-you-ever",verb:"see",promptJa:"富士山を見たことがありますか。",contextJa:"場面：相手の経験をたずねています。",primaryAnswer:"Have you ever seen Mt. Fuji?",acceptedAnswers:["Have you ever seen Mt. Fuji?","Have you ever seen Mount Fuji?"],chunks:[{en:"Have you ever seen",ja:"見たことがありますか"},{en:"Mt. Fuji",ja:"富士山を"}],hints:{structure:"Have + S + ever + 過去分詞 …?",pattern:"Have you ever seen …?",full:"Have you ever seen Mt. Fuji?"},explanation:"経験をたずねるときは Have you ever …? の形を使います。"},
+{id:"RS-PP-005",level:2,tense:"pp-exp",pattern:"have-never",verb:"drink",promptJa:"私はお酒を飲んだことがありません。",contextJa:"場面：飲み会で自己紹介しています。",primaryAnswer:"I've never drunk alcohol.",acceptedAnswers:["I've never drunk alcohol.","I have never drunk alcohol.","I've never had alcohol."],chunks:[{en:"I've never drunk",ja:"飲んだことがありません"},{en:"alcohol",ja:"お酒を"}],hints:{structure:"S + have never + 過去分詞",pattern:"I've never drunk …",full:"I've never drunk alcohol."},explanation:"drink の過去分詞は drunk です。"},
+{id:"RS-PP-006",level:2,tense:"pp-exp",pattern:"have-past-participle",verb:"read",promptJa:"その本はもう読みました。",contextJa:"場面：友達に本の感想を求められています。",primaryAnswer:"I've already read that book.",acceptedAnswers:["I've already read that book.","I have already read that book.","I've read that book already."],chunks:[{en:"I've already read",ja:"もう読みました"},{en:"that book",ja:"その本は"}],hints:{structure:"S + have already + 過去分詞",pattern:"I've already read …",full:"I've already read that book."},explanation:"「もう〜した」は現在完了 + already で表します。read の過去分詞は read（発音はレッド）です。"},
+{id:"RS-PP-007",level:2,tense:"pp-exp",pattern:"have-been-to",verb:"come",promptJa:"彼は日本に来たことがあります。",contextJa:"場面：同僚の経歴を話しています。",primaryAnswer:"He has been to Japan before.",acceptedAnswers:["He has been to Japan before.","He's been to Japan before.","He has visited Japan before."],chunks:[{en:"He has been",ja:"来たことがあります"},{en:"to Japan",ja:"日本へ"},{en:"before",ja:"以前に"}],hints:{structure:"He/She + has been to + 場所",pattern:"He has been / to … / before.",full:"He has been / to Japan / before."},explanation:"主語が三人称単数のときは has を使います。"},
+{id:"RS-PP-008",level:1,tense:"pp-exp",pattern:"have-past-participle",verb:"meet",promptJa:"私は彼に会ったことがあります。",contextJa:"場面：知人の話をしています。",primaryAnswer:"I've met him before.",acceptedAnswers:["I've met him before.","I have met him before.","I've met him."],chunks:[{en:"I've met him",ja:"彼に会ったことがあります"},{en:"before",ja:"以前に"}],hints:{structure:"S + have + 過去分詞 + O",pattern:"I've met … / before.",full:"I've met him / before."},explanation:"meet の過去分詞は met です。"},
+/* ---- 現在完了・完了／結果 ---- */
+{id:"RS-PP-101",level:1,tense:"pp-comp",pattern:"have-just",verb:"finish",promptJa:"ちょうど宿題が終わったところです。",contextJa:"場面：家族に声をかけられています。",primaryAnswer:"I've just finished my homework.",acceptedAnswers:["I've just finished my homework.","I have just finished my homework.","I just finished my homework."],chunks:[{en:"I've just finished",ja:"ちょうど終わったところです"},{en:"my homework",ja:"宿題が"}],hints:{structure:"S + have just + 過去分詞",pattern:"I've just finished …",full:"I've just finished my homework."},explanation:"「〜したところ」は have just + 過去分詞です。"},
+{id:"RS-PP-102",level:1,tense:"pp-comp",pattern:"have-not-yet",verb:"eat",promptJa:"私はまだ昼ごはんを食べていません。",contextJa:"場面：昼休みの誘いを受けています。",primaryAnswer:"I haven't eaten lunch yet.",acceptedAnswers:["I haven't eaten lunch yet.","I have not eaten lunch yet.","I haven't had lunch yet."],chunks:[{en:"I haven't eaten",ja:"まだ食べていません"},{en:"lunch",ja:"昼ごはんを"},{en:"yet",ja:"まだ（否定文で）"}],hints:{structure:"S + haven't + 過去分詞 + yet",pattern:"I haven't eaten … / yet.",full:"I haven't eaten lunch / yet."},explanation:"「まだ〜していない」は haven't + 過去分詞 + yet です。"},
+{id:"RS-PP-103",level:1,tense:"pp-comp",pattern:"have-you-yet",verb:"do",promptJa:"もう予約をしましたか。",contextJa:"場面：旅行の準備を確認しています。",primaryAnswer:"Have you made a reservation yet?",acceptedAnswers:["Have you made a reservation yet?","Have you booked yet?","Have you made the reservation yet?"],chunks:[{en:"Have you made",ja:"もうしましたか"},{en:"a reservation",ja:"予約を"},{en:"yet",ja:"もう"}],hints:{structure:"Have + S + 過去分詞 … yet?",pattern:"Have you made … / yet?",full:"Have you made a reservation / yet?"},explanation:"予約は make a reservation というチャンクで表します。疑問文では yet を文末に置きます。"},
+{id:"RS-PP-104",level:2,tense:"pp-comp",pattern:"have-already",verb:"make",promptJa:"私はもう決断しました。",contextJa:"場面：上司に判断の結果を報告しています。",primaryAnswer:"I've already made a decision.",acceptedAnswers:["I've already made a decision.","I have already made a decision.","I've made a decision already.","I made a decision."],chunks:[{en:"I've already made",ja:"もう〜しました"},{en:"a decision",ja:"決断を"}],hints:{structure:"S + have already + 過去分詞",pattern:"I've already made …",full:"I've already made a decision."},explanation:"decide の代わりに make a decision というチャンクも自然です。結果が今に残るときは現在完了が合います。"},
+{id:"RS-PP-105",level:2,tense:"pp-comp",pattern:"have-just",verb:"get",promptJa:"今、家に着いたところです。",contextJa:"場面：家族に電話しています。",primaryAnswer:"I've just got home.",acceptedAnswers:["I've just got home.","I've just gotten home.","I just got home.","I've just arrived home."],chunks:[{en:"I've just got",ja:"今〜したところです"},{en:"home",ja:"家に着いた"}],hints:{structure:"S + have just + 過去分詞",pattern:"I've just got home.",full:"I've just got home."},explanation:"「家に着く」は get home というチャンクで表します。"},
+{id:"RS-PP-106",level:1,tense:"pp-comp",pattern:"have-not-yet",verb:"know",promptJa:"結果はまだ分かりません。",contextJa:"場面：試験の結果を聞かれています。",primaryAnswer:"I don't know the result yet.",acceptedAnswers:["I don't know the result yet.","I do not know the result yet.","I haven't heard the result yet."],chunks:[{en:"I don't know",ja:"分かりません"},{en:"the result",ja:"結果は"},{en:"yet",ja:"まだ"}],hints:{structure:"S + don't + 動詞 + yet",pattern:"I don't know … / yet.",full:"I don't know the result / yet."},explanation:"「まだ分からない」は現在の状態なので don't know + yet が自然です。"},
+/* ---- 現在完了・継続 ---- */
+{id:"RS-PP-201",level:1,tense:"pp-cont",pattern:"have-lived-for",verb:"live",promptJa:"私は東京に10年住んでいます。",contextJa:"場面：引っ越しの話をしています。",primaryAnswer:"I've lived in Tokyo for ten years.",acceptedAnswers:["I've lived in Tokyo for ten years.","I have lived in Tokyo for ten years.","I've been living in Tokyo for ten years."],chunks:[{en:"I've lived",ja:"住んでいます"},{en:"in Tokyo",ja:"東京に"},{en:"for ten years",ja:"10年間"}],hints:{structure:"S + have + 過去分詞 + for + 期間",pattern:"I've lived / in … / for …",full:"I've lived / in Tokyo / for ten years."},explanation:"期間には for、起点には since を使います。住み続けているので現在完了です。"},
+{id:"RS-PP-202",level:1,tense:"pp-cont",pattern:"have-known-since",verb:"know",promptJa:"私は彼を学生の頃から知っています。",contextJa:"場面：古い友人を紹介しています。",primaryAnswer:"I've known him since we were students.",acceptedAnswers:["I've known him since we were students.","I have known him since we were students.","I've known him since I was a student."],chunks:[{en:"I've known him",ja:"彼を知っています"},{en:"since we were students",ja:"学生の頃から"}],hints:{structure:"S + have known + O + since + 起点",pattern:"I've known … / since …",full:"I've known him / since we were students."},explanation:"know は状態動詞なので進行形にせず、現在完了で継続を表します。起点には since を使います。"},
+{id:"RS-PP-203",level:2,tense:"pp-cont",pattern:"have-worked-for",verb:"work",promptJa:"私はこの会社で5年働いています。",contextJa:"場面：経歴を説明しています。",primaryAnswer:"I've worked at this company for five years.",acceptedAnswers:["I've worked at this company for five years.","I have worked at this company for five years.","I've worked for this company for five years.","I've been working at this company for five years."],chunks:[{en:"I've worked",ja:"働いています"},{en:"at this company",ja:"この会社で"},{en:"for five years",ja:"5年間"}],hints:{structure:"S + have + 過去分詞 + for + 期間",pattern:"I've worked / at … / for …",full:"I've worked / at this company / for five years."},explanation:"勤務先は at / for + 会社名、期間は for five years です。"},
+{id:"RS-PP-204",level:2,tense:"pp-cont",pattern:"have-been-ing",verb:"wait",promptJa:"私は30分ずっと待っています。",contextJa:"場面：待ち合わせ場所から電話しています。",primaryAnswer:"I've been waiting for thirty minutes.",acceptedAnswers:["I've been waiting for thirty minutes.","I have been waiting for thirty minutes.","I've been waiting for 30 minutes."],chunks:[{en:"I've been waiting",ja:"ずっと待っています"},{en:"for thirty minutes",ja:"30分間"}],hints:{structure:"S + have been + -ing + for + 期間",pattern:"I've been waiting / for …",full:"I've been waiting / for thirty minutes."},explanation:"動作が今も続いていることを強調するときは現在完了進行形を使います。"},
+{id:"RS-PP-205",level:1,tense:"pp-cont",pattern:"have-lived-for",verb:"have",promptJa:"私はこの車を3年持っています。",contextJa:"場面：車の話をしています。",primaryAnswer:"I've had this car for three years.",acceptedAnswers:["I've had this car for three years.","I have had this car for three years.","I've owned this car for three years."],chunks:[{en:"I've had",ja:"持っています"},{en:"this car",ja:"この車を"},{en:"for three years",ja:"3年間"}],hints:{structure:"S + have had + O + for + 期間",pattern:"I've had … / for …",full:"I've had this car / for three years."},explanation:"「持っている」の継続は have had で表します。前の have が助動詞、後の had が過去分詞です。"},
+/* ---- 過去形 ---- */
+{id:"RS-PA-001",level:1,tense:"past",pattern:"went-to",verb:"go",promptJa:"私は昨日、友達と映画を見ました。",contextJa:"場面：昨日の出来事を話しています。",primaryAnswer:"I watched a movie with my friends yesterday.",acceptedAnswers:["I watched a movie with my friends yesterday.","I saw a movie with my friends yesterday.","Yesterday, I watched a movie with my friends."],chunks:[{en:"I watched a movie",ja:"映画を見ました"},{en:"with my friends",ja:"友達と"},{en:"yesterday",ja:"昨日"}],hints:{structure:"S + 過去形 + O + with … + yesterday",pattern:"I watched … / with … / yesterday.",full:"I watched a movie / with my friends / yesterday."},explanation:"yesterday があるので過去形です。文は「見た／友達と／昨日」の順に前から組み立てます。"},
+{id:"RS-PA-002",level:1,tense:"past",pattern:"went-to",verb:"go",promptJa:"私は去年、京都に行きました。",contextJa:"場面：過去の旅行を話しています。",primaryAnswer:"I went to Kyoto last year.",acceptedAnswers:["I went to Kyoto last year.","Last year, I went to Kyoto."],chunks:[{en:"I went",ja:"行きました"},{en:"to Kyoto",ja:"京都へ"},{en:"last year",ja:"去年"}],hints:{structure:"S + went to + 場所 + last year",pattern:"I went / to … / last year.",full:"I went / to Kyoto / last year."},explanation:"last year のような過去の一点が示されるときは過去形です（現在完了の been to との違いに注意）。"},
+{id:"RS-PA-003",level:1,tense:"past",pattern:"made-decision",verb:"make",promptJa:"私は昨日、決断しました。",contextJa:"場面：昨日の出来事として報告しています。",primaryAnswer:"I made a decision yesterday.",acceptedAnswers:["I made a decision yesterday.","I decided yesterday.","Yesterday, I made a decision."],chunks:[{en:"I made",ja:"しました"},{en:"a decision",ja:"決断を"},{en:"yesterday",ja:"昨日"}],hints:{structure:"S + made + a decision + yesterday",pattern:"I made / a decision / yesterday.",full:"I made / a decision / yesterday."},explanation:"make a decision と decided はどちらも自然な表現です。昨日という時点があるので過去形です。"},
+{id:"RS-PA-004",level:1,tense:"past",pattern:"bought",verb:"buy",promptJa:"私は新しい靴を買いました。",contextJa:"場面：買い物の話をしています。",primaryAnswer:"I bought new shoes.",acceptedAnswers:["I bought new shoes.","I bought a pair of new shoes.","I bought some new shoes."],chunks:[{en:"I bought",ja:"買いました"},{en:"new shoes",ja:"新しい靴を"}],hints:{structure:"S + bought + O",pattern:"I bought …",full:"I bought new shoes."},explanation:"buy の過去形は bought です。shoes は通常複数形で使います。"},
+{id:"RS-PA-005",level:2,tense:"past",pattern:"had-good-time",verb:"have",promptJa:"私たちは週末、楽しく過ごしました。",contextJa:"場面：週明けに同僚と話しています。",primaryAnswer:"We had a good time last weekend.",acceptedAnswers:["We had a good time last weekend.","We had a great time last weekend.","We enjoyed ourselves last weekend."],chunks:[{en:"We had a good time",ja:"楽しく過ごしました"},{en:"last weekend",ja:"週末（先週末）"}],hints:{structure:"S + had a good time + last weekend",pattern:"We had a good time / last weekend.",full:"We had a good time / last weekend."},explanation:"「楽しく過ごす」は have a good time というチャンクで表します。"},
+{id:"RS-PA-006",level:1,tense:"past",pattern:"took-break",verb:"take",promptJa:"私は午後、休憩を取りました。",contextJa:"場面：仕事の進み具合を報告しています。",primaryAnswer:"I took a break in the afternoon.",acceptedAnswers:["I took a break in the afternoon.","I had a break in the afternoon."],chunks:[{en:"I took a break",ja:"休憩を取りました"},{en:"in the afternoon",ja:"午後に"}],hints:{structure:"S + took a break + in the afternoon",pattern:"I took a break / in the afternoon.",full:"I took a break / in the afternoon."},explanation:"「休憩を取る」は take a break というチャンクです。"},
+{id:"RS-PA-007",level:2,tense:"past",pattern:"was-ing",verb:"look",promptJa:"その時、私は鍵を探していました。",contextJa:"場面：昨夜の出来事を説明しています。",primaryAnswer:"I was looking for my keys then.",acceptedAnswers:["I was looking for my keys then.","I was looking for my keys at that time.","At that time, I was looking for my keys."],chunks:[{en:"I was looking for",ja:"探していました"},{en:"my keys",ja:"鍵を"},{en:"then",ja:"その時"}],hints:{structure:"S + was + -ing（過去進行形）",pattern:"I was looking for … / then.",full:"I was looking for my keys / then."},explanation:"過去のある時点で進行中だった動作は過去進行形です。「探す」は look for というチャンクです。"},
+{id:"RS-PA-008",level:1,tense:"past",pattern:"did-you",verb:"watch",promptJa:"昨夜の試合を見ましたか。",contextJa:"場面：同僚にたずねています。",primaryAnswer:"Did you watch the game last night?",acceptedAnswers:["Did you watch the game last night?","Did you see the game last night?"],chunks:[{en:"Did you watch",ja:"見ましたか"},{en:"the game",ja:"試合を"},{en:"last night",ja:"昨夜の"}],hints:{structure:"Did + S + 動詞の原形 …?",pattern:"Did you watch … / last night?",full:"Did you watch the game / last night?"},explanation:"過去の疑問文は Did で始め、動詞は原形に戻します。"},
+/* ---- 現在形 ---- */
+{id:"RS-PR-001",level:1,tense:"present",pattern:"usually",verb:"get",promptJa:"私はふだん7時に家に着きます。",contextJa:"場面：生活習慣を話しています。",primaryAnswer:"I usually get home at seven.",acceptedAnswers:["I usually get home at seven.","I usually get home at 7.","I usually arrive home at seven."],chunks:[{en:"I usually get home",ja:"ふだん家に着きます"},{en:"at seven",ja:"7時に"}],hints:{structure:"S + usually + 動詞 …",pattern:"I usually get home / at …",full:"I usually get home / at seven."},explanation:"習慣は現在形です。「家に着く」は get home というチャンクを使います。"},
+{id:"RS-PR-002",level:1,tense:"present",pattern:"want",verb:"want",promptJa:"私はコーヒーが飲みたいです。",contextJa:"場面：カフェで注文の前に話しています。",primaryAnswer:"I want to drink coffee.",acceptedAnswers:["I want to drink coffee.","I want a coffee.","I'd like a coffee.","I would like a coffee."],chunks:[{en:"I want to drink",ja:"飲みたいです"},{en:"coffee",ja:"コーヒーが"}],hints:{structure:"S + want to + 動詞",pattern:"I want to drink …",full:"I want to drink coffee."},explanation:"「〜したい」は want to + 動詞の原形です。注文では I'd like … も丁寧で自然です。"},
+{id:"RS-PR-003",level:1,tense:"present",pattern:"need",verb:"need",promptJa:"私にはもっと時間が必要です。",contextJa:"場面：仕事の相談をしています。",primaryAnswer:"I need more time.",acceptedAnswers:["I need more time.","I need some more time."],chunks:[{en:"I need",ja:"必要です"},{en:"more time",ja:"もっと時間が"}],hints:{structure:"S + need + O",pattern:"I need …",full:"I need more time."},explanation:"日本語の語順に引きずられず、I need … と前から組み立てます。"},
+{id:"RS-PR-004",level:2,tense:"present",pattern:"think",verb:"think",promptJa:"私は、それが良い考えだと思います。",contextJa:"場面：会議で意見を言っています。",primaryAnswer:"I think it's a good idea.",acceptedAnswers:["I think it's a good idea.","I think that is a good idea.","I think it is a good idea."],chunks:[{en:"I think",ja:"〜と思います"},{en:"it's a good idea",ja:"それが良い考えだ"}],hints:{structure:"I think + 文",pattern:"I think / it's a good idea.",full:"I think / it's a good idea."},explanation:"意見は I think の後に文をそのまま続けます。"},
+{id:"RS-PR-005",level:1,tense:"present",pattern:"dont",verb:"drink",promptJa:"私はコーヒーを飲みません。",contextJa:"場面：飲み物の好みを話しています。",primaryAnswer:"I don't drink coffee.",acceptedAnswers:["I don't drink coffee.","I do not drink coffee."],chunks:[{en:"I don't drink",ja:"飲みません"},{en:"coffee",ja:"コーヒーを"}],hints:{structure:"S + don't + 動詞の原形",pattern:"I don't drink …",full:"I don't drink coffee."},explanation:"習慣の否定は don't + 原形です。"},
+{id:"RS-PR-006",level:2,tense:"present",pattern:"look-for",verb:"look",promptJa:"私は新しい仕事を探しています。（現在の状況として）",contextJa:"場面：近況を話しています。",primaryAnswer:"I'm looking for a new job.",acceptedAnswers:["I'm looking for a new job.","I am looking for a new job.","I'm searching for a new job."],chunks:[{en:"I'm looking for",ja:"探しています"},{en:"a new job",ja:"新しい仕事を"}],hints:{structure:"S + be + looking for + O",pattern:"I'm looking for …",full:"I'm looking for a new job."},explanation:"しばらく続いている「探している」は現在進行形が自然です。look for は「探す」のチャンクです。"},
+/* ---- 現在進行形 ---- */
+{id:"RS-PC-001",level:1,tense:"prog",pattern:"be-ing",verb:"do",promptJa:"私は今、夕食を作っています。",contextJa:"場面：電話に出て状況を伝えています。",primaryAnswer:"I'm making dinner now.",acceptedAnswers:["I'm making dinner now.","I am making dinner now.","I'm cooking dinner now."],chunks:[{en:"I'm making",ja:"作っています"},{en:"dinner",ja:"夕食を"},{en:"now",ja:"今"}],hints:{structure:"S + be + -ing",pattern:"I'm making … / now.",full:"I'm making dinner / now."},explanation:"今まさにしている動作は現在進行形です。夕食作りは make dinner と言えます。"},
+{id:"RS-PC-002",level:1,tense:"prog",pattern:"be-ing",verb:"come",promptJa:"バスが来ています。",contextJa:"場面：バス停で友達に伝えています。",primaryAnswer:"The bus is coming.",acceptedAnswers:["The bus is coming.","Here comes the bus."],chunks:[{en:"The bus is coming",ja:"バスが来ています"}],hints:{structure:"S + be + coming",pattern:"The bus is coming.",full:"The bus is coming."},explanation:"近づいてくる様子は進行形で表します。Here comes the bus. も自然な言い方です。"},
+{id:"RS-PC-003",level:2,tense:"prog",pattern:"be-ing",verb:"bring",promptJa:"彼は資料を持ってきているところです。",contextJa:"場面：会議の開始前に伝えています。",primaryAnswer:"He is bringing the documents now.",acceptedAnswers:["He is bringing the documents now.","He's bringing the documents now.","He is bringing the materials now."],chunks:[{en:"He is bringing",ja:"持ってきているところです"},{en:"the documents",ja:"資料を"},{en:"now",ja:"今"}],hints:{structure:"He + is + -ing",pattern:"He is bringing … / now.",full:"He is bringing the documents / now."},explanation:"「持ってくる」は bring です。三人称単数なので is を使います。"},
+/* ---- 未来表現 ---- */
+{id:"RS-FU-001",level:1,tense:"future",pattern:"going-to",verb:"go",promptJa:"私は来週、京都に行く予定です。",contextJa:"場面：旅行の予定を話しています。",primaryAnswer:"I'm going to Kyoto next week.",acceptedAnswers:["I'm going to Kyoto next week.","I am going to Kyoto next week.","I'm going to go to Kyoto next week.","I'll go to Kyoto next week."],chunks:[{en:"I'm going",ja:"行く予定です"},{en:"to Kyoto",ja:"京都へ"},{en:"next week",ja:"来週"}],hints:{structure:"S + be going to + 場所",pattern:"I'm going / to … / next week.",full:"I'm going / to Kyoto / next week."},explanation:"決まっている予定は be going to が自然です。過去形・現在完了との違いを確認しましょう。"},
+{id:"RS-FU-002",level:1,tense:"future",pattern:"will",verb:"give",promptJa:"明日、電話をかけ直します。",contextJa:"場面：電話の終わりに伝えています。",primaryAnswer:"I'll call you back tomorrow.",acceptedAnswers:["I'll call you back tomorrow.","I will call you back tomorrow.","I'll call back tomorrow."],chunks:[{en:"I'll call you back",ja:"かけ直します"},{en:"tomorrow",ja:"明日"}],hints:{structure:"S + will + 動詞",pattern:"I'll call you back / tomorrow.",full:"I'll call you back / tomorrow."},explanation:"その場で決めた約束には will が合います。call back は「かけ直す」のチャンクです。"},
+{id:"RS-FU-003",level:2,tense:"future",pattern:"going-to",verb:"buy",promptJa:"私は来月、新しいパソコンを買うつもりです。",contextJa:"場面：買い物の計画を話しています。",primaryAnswer:"I'm going to buy a new computer next month.",acceptedAnswers:["I'm going to buy a new computer next month.","I am going to buy a new computer next month.","I'm planning to buy a new computer next month."],chunks:[{en:"I'm going to buy",ja:"買うつもりです"},{en:"a new computer",ja:"新しいパソコンを"},{en:"next month",ja:"来月"}],hints:{structure:"S + be going to + 動詞",pattern:"I'm going to buy … / next month.",full:"I'm going to buy a new computer / next month."},explanation:"すでに決めている計画は be going to + 動詞の原形です。"},
+{id:"RS-FU-004",level:1,tense:"future",pattern:"will",verb:"put",promptJa:"会議は3時からにしましょう。",contextJa:"場面：予定を調整しています。",primaryAnswer:"Let's have the meeting at three.",acceptedAnswers:["Let's have the meeting at three.","Let's have the meeting at 3.","Let's meet at three.","Shall we have the meeting at three?"],chunks:[{en:"Let's have the meeting",ja:"会議をしましょう"},{en:"at three",ja:"3時から"}],hints:{structure:"Let's + 動詞",pattern:"Let's have … / at …",full:"Let's have the meeting / at three."},explanation:"提案は Let's … が基本です。時刻は at three と表します。"}
+];
+/* ============ v1.2 追加問題（週×編・文ファミリー） ============ */
+var NEW_QUESTIONS = [
+/* ---- 第1週：現在形 SV／SVC／SVO ドリル（主語を差し替える） ---- */
+{id:"RS-W1-01",level:1,tense:"present",pattern:"sv-run",verb:"run",week:1,scene:"daily",family:"run",base:true,promptJa:"彼は毎朝走ります。",contextJa:"場面：彼の習慣を話しています。主語は He です。",primaryAnswer:"He runs every morning.",acceptedAnswers:["He runs every morning.","He goes running every morning."],chunks:[{en:"He runs",ja:"彼は走ります"},{en:"every morning",ja:"毎朝"}],hints:{structure:"SV：He + runs（三単現の -s）",pattern:"He runs / every morning.",full:"He runs / every morning."},explanation:"SV型。主語が he のとき動詞に -s が付きます。意味の手がかりのない小さな音なので、口で何度も繰り返して体に入れます。"},
+{id:"RS-W1-02",level:1,tense:"present",pattern:"sv-laugh",verb:"sleep",week:1,scene:"daily",family:"sleep",base:true,promptJa:"彼は8時間寝ます。",contextJa:"場面：睡眠の習慣を話しています。",primaryAnswer:"He sleeps for eight hours.",acceptedAnswers:["He sleeps for eight hours.","He sleeps eight hours."],chunks:[{en:"He sleeps",ja:"彼は寝ます"},{en:"for eight hours",ja:"8時間"}],hints:{structure:"SV：He + sleeps（三単現の -s）",pattern:"He sleeps / for … hours.",full:"He sleeps / for eight hours."},explanation:"SV型のドリルです。for + 時間 は「〜の間」という塊として一緒に覚えます。"},
+{id:"RS-W1-03",level:1,tense:"present",pattern:"sv-come",verb:"come",week:1,scene:"school",family:"come",base:true,promptJa:"彼らはバスで学校に来ます。",contextJa:"場面：通学の様子を話しています。主語は They です。",primaryAnswer:"They come to school by bus.",acceptedAnswers:["They come to school by bus."],chunks:[{en:"They come",ja:"彼らは来ます"},{en:"to school",ja:"学校へ"},{en:"by bus",ja:"バスで"}],hints:{structure:"SV：They + come（-s は付かない）",pattern:"They come / to school / by bus.",full:"They come / to school / by bus."},explanation:"主語が they のとき -s は付きません。he との違いを、主語の差し替えで体に入れます。by bus は乗り物の塊です。"},
+{id:"RS-W1-04",level:1,tense:"present",pattern:"svc-be",verb:"be",week:1,scene:"daily",family:"be-busy",base:true,promptJa:"彼女は忙しいです。",contextJa:"場面：彼女の様子を伝えます。主語は She です。",primaryAnswer:"She is busy.",acceptedAnswers:["She is busy.","She's busy."],chunks:[{en:"She is",ja:"彼女は〜です"},{en:"busy",ja:"忙しい"}],hints:{structure:"SVC：She + is + 形容詞",pattern:"She is busy.",full:"She is busy."},explanation:"SVC型。be動詞は主語で形が変わります（I am / she is / they are）。busy は補語スロットに入る形容詞です。"},
+{id:"RS-W1-05",level:1,tense:"present",pattern:"svc-look",verb:"look",week:1,scene:"daily",family:"look-tired",base:true,promptJa:"彼は疲れて見えます。",contextJa:"場面：彼の様子を見て言っています。",primaryAnswer:"He looks tired.",acceptedAnswers:["He looks tired."],chunks:[{en:"He looks",ja:"彼は〜に見えます"},{en:"tired",ja:"疲れて"}],hints:{structure:"SVC：He + looks + 形容詞",pattern:"He looks tired.",full:"He looks tired."},explanation:"look は SVC型で使うと「〜に見える」。looks の -s も三単現です。"},
+{id:"RS-W1-06",level:1,tense:"present",pattern:"svc-be",verb:"be",week:1,scene:"school",family:"be-teacher",base:true,promptJa:"彼女は先生です。",contextJa:"場面：職業を紹介しています。",primaryAnswer:"She is a teacher.",acceptedAnswers:["She is a teacher.","She's a teacher."],chunks:[{en:"She is",ja:"彼女は〜です"},{en:"a teacher",ja:"先生"}],hints:{structure:"SVC：She + is + 名詞",pattern:"She is a teacher.",full:"She is a teacher."},explanation:"SVC型。補語スロットには形容詞だけでなく名詞も入ります。"},
+{id:"RS-W1-07",level:1,tense:"present",pattern:"svo-play",verb:"play",week:1,scene:"daily",family:"play-soccer",base:true,promptJa:"彼はサッカーをします。",contextJa:"場面：彼の趣味を話しています。主語は He です。",primaryAnswer:"He plays soccer.",acceptedAnswers:["He plays soccer."],chunks:[{en:"He plays",ja:"彼は〜をします"},{en:"soccer",ja:"サッカーを"}],hints:{structure:"SVO：He + plays（三単現の -s）+ O",pattern:"He plays soccer.",full:"He plays soccer."},explanation:"実力テストでも使う土台の問題です。plays の -s がこの週の焦点です。"},
+{id:"RS-W1-08",level:1,tense:"present",pattern:"svo-speak",verb:"speak",week:1,scene:"school",family:"speak-english",base:true,promptJa:"彼女は英語を話します。",contextJa:"場面：彼女の語学力を話しています。",primaryAnswer:"She speaks English.",acceptedAnswers:["She speaks English."],chunks:[{en:"She speaks",ja:"彼女は〜を話します"},{en:"English",ja:"英語を"}],hints:{structure:"SVO：She + speaks + O",pattern:"She speaks English.",full:"She speaks English."},explanation:"SVO型の差し替えドリルです。主語 she → speaks と -s が連動します。"},
+{id:"RS-W1-09",level:1,tense:"present",pattern:"svo-drink",verb:"drink",week:1,scene:"daily",family:"drink-coffee",base:true,promptJa:"彼女は毎朝コーヒーを飲みます。",contextJa:"場面：彼女の朝の習慣です。",primaryAnswer:"She drinks coffee every morning.",acceptedAnswers:["She drinks coffee every morning."],chunks:[{en:"She drinks",ja:"彼女は〜を飲みます"},{en:"coffee",ja:"コーヒーを"},{en:"every morning",ja:"毎朝"}],hints:{structure:"SVO：She + drinks + O",pattern:"She drinks coffee / every morning.",full:"She drinks coffee / every morning."},explanation:"第2週では She doesn't drink … と否定に変換し、第3週では過去形に変換する文ファミリーです。"},
+{id:"RS-W1-10",level:1,tense:"present",pattern:"svo-do",verb:"do",week:1,scene:"school",family:"do-homework",base:true,promptJa:"彼らは宿題をします。",contextJa:"場面：放課後の様子です。主語は They です。",primaryAnswer:"They do their homework.",acceptedAnswers:["They do their homework."],chunks:[{en:"They do",ja:"彼らは〜をします"},{en:"their homework",ja:"（彼らの）宿題を"}],hints:{structure:"SVO：They + do（-s なし）+ O",pattern:"They do their homework.",full:"They do their homework."},explanation:"they のときは do のまま。he のときは does になる対比を、次の週の疑問文で使います。"},
+{id:"RS-W1-11",level:1,tense:"present",pattern:"svo-eat",verb:"eat",week:1,scene:"daily",family:"eat-breakfast",base:true,promptJa:"私たちは朝食を食べます。",contextJa:"場面：家族の朝の習慣です。主語は We です。",primaryAnswer:"We eat breakfast.",acceptedAnswers:["We eat breakfast.","We have breakfast."],chunks:[{en:"We eat",ja:"私たちは食べます"},{en:"breakfast",ja:"朝食を"}],hints:{structure:"SVO：We + eat + O",pattern:"We eat breakfast.",full:"We eat breakfast."},explanation:"食事は eat でも have でも言えます。主語 we では -s は付きません。"},
+{id:"RS-W1-12",level:1,tense:"present",pattern:"svo-study",verb:"study",week:1,scene:"school",family:"study-english",base:false,promptJa:"彼は図書館で勉強します。",contextJa:"場面：彼の勉強場所を話しています。",primaryAnswer:"He studies at the library.",acceptedAnswers:["He studies at the library."],chunks:[{en:"He studies",ja:"彼は勉強します"},{en:"at the library",ja:"図書館で"}],hints:{structure:"SVO/SV：He + studies（y→ies）",pattern:"He studies / at the library.",full:"He studies / at the library."},explanation:"study は三単現で studies になります（y→ies）。at the library は場所の塊で、文の後ろに繋ぐ練習の最初の一歩です。"},
+{id:"RS-W1-13",level:1,tense:"present",pattern:"sv-work",verb:"work",week:1,scene:"work",family:"work-hospital",base:true,promptJa:"彼女は病院で働いています。",contextJa:"場面：彼女の勤務先を話しています（現在の仕事として）。",primaryAnswer:"She works at a hospital.",acceptedAnswers:["She works at a hospital."],chunks:[{en:"She works",ja:"彼女は働いています"},{en:"at a hospital",ja:"病院で"}],hints:{structure:"SV：She + works + at …",pattern:"She works / at a hospital.",full:"She works / at a hospital."},explanation:"勤務先は at + 場所。works の -s も三単現です。第4週では He has worked … のように継続へ変換します。"},
+{id:"RS-W1-14",level:1,tense:"present",pattern:"svo-buy",verb:"buy",week:1,scene:"shopping",family:"buy-bread",base:true,promptJa:"彼女は駅でパンを買います。",contextJa:"場面：彼女の買い物の習慣です。",primaryAnswer:"She buys bread at the station.",acceptedAnswers:["She buys bread at the station."],chunks:[{en:"She buys",ja:"彼女は〜を買います"},{en:"bread",ja:"パンを"},{en:"at the station",ja:"駅で"}],hints:{structure:"SVO：She + buys + O",pattern:"She buys bread / at the station.",full:"She buys bread / at the station."},explanation:"buy の文ファミリーです。第3週で過去形 bought、第5週で関係代名詞の文に化けます。"},
+{id:"RS-W1-15",level:1,tense:"present",pattern:"sv-travel",verb:"go",week:1,scene:"travel",family:"travel-train",base:true,promptJa:"彼らは電車で旅行します。",contextJa:"場面：旅行の移動手段を話しています。",primaryAnswer:"They travel by train.",acceptedAnswers:["They travel by train.","They go by train."],chunks:[{en:"They travel",ja:"彼らは旅行します"},{en:"by train",ja:"電車で"}],hints:{structure:"SV：They + travel + by …",pattern:"They travel / by train.",full:"They travel / by train."},explanation:"by + 乗り物 は手段の塊です。"},
+/* ---- 第2週：疑問・否定への変換（同じ文ファミリー） ---- */
+{id:"RS-W2-01",level:1,tense:"present",pattern:"does-q",verb:"play",week:2,scene:"daily",family:"play-soccer",base:true,promptJa:"彼はサッカーをしますか。",contextJa:"場面：第1週の He plays soccer. を疑問文に変換します。",primaryAnswer:"Does he play soccer?",acceptedAnswers:["Does he play soccer?"],chunks:[{en:"Does he play",ja:"彼は〜をしますか"},{en:"soccer",ja:"サッカーを"}],hints:{structure:"Does + he + 動詞の原形 …?",pattern:"Does he play soccer?",full:"Does he play soccer?"},explanation:"三単現の -s は does に移ります。だから動詞は原形 play に戻ります。ここが2つ目の引っかかりどころです。"},
+{id:"RS-W2-02",level:1,tense:"present",pattern:"doesnt",verb:"drink",week:2,scene:"daily",family:"drink-coffee",base:true,promptJa:"彼女はコーヒーを飲みません。",contextJa:"場面：第1週の She drinks coffee. を否定文に変換します。",primaryAnswer:"She doesn't drink coffee.",acceptedAnswers:["She doesn't drink coffee.","She does not drink coffee."],chunks:[{en:"She doesn't drink",ja:"彼女は〜を飲みません"},{en:"coffee",ja:"コーヒーを"}],hints:{structure:"She + doesn't + 動詞の原形",pattern:"She doesn't drink coffee.",full:"She doesn't drink coffee."},explanation:"否定でも -s は doesn't 側に移り、動詞は原形です。"},
+{id:"RS-W2-03",level:1,tense:"present",pattern:"do-q",verb:"speak",week:2,scene:"school",family:"speak-english",base:true,promptJa:"彼らは英語を話しますか。",contextJa:"場面：相手グループについてたずねます。",primaryAnswer:"Do they speak English?",acceptedAnswers:["Do they speak English?"],chunks:[{en:"Do they speak",ja:"彼らは〜を話しますか"},{en:"English",ja:"英語を"}],hints:{structure:"Do + they + 動詞の原形 …?",pattern:"Do they speak English?",full:"Do they speak English?"},explanation:"主語が they の疑問は Do で始めます。Does との使い分けは主語で決まります。"},
+{id:"RS-W2-04",level:1,tense:"present",pattern:"do-q",verb:"run",week:2,scene:"daily",family:"run",base:true,promptJa:"あなたは毎朝走りますか。",contextJa:"場面：相手の習慣をたずねます。",primaryAnswer:"Do you run every morning?",acceptedAnswers:["Do you run every morning?"],chunks:[{en:"Do you run",ja:"あなたは走りますか"},{en:"every morning",ja:"毎朝"}],hints:{structure:"Do + you + 動詞の原形 …?",pattern:"Do you run / every morning?",full:"Do you run / every morning?"},explanation:"第1週の He runs … と同じ run の文ファミリーです。主語が you になると Do you run …? になります。"},
+{id:"RS-W2-05",level:1,tense:"present",pattern:"isnt",verb:"be",week:2,scene:"daily",family:"be-busy",base:true,promptJa:"彼は忙しくありません。",contextJa:"場面：第1週の SVC を否定に変換します。",primaryAnswer:"He isn't busy.",acceptedAnswers:["He isn't busy.","He is not busy.","He's not busy."],chunks:[{en:"He isn't",ja:"彼は〜ではありません"},{en:"busy",ja:"忙しい"}],hints:{structure:"He + isn't + 形容詞",pattern:"He isn't busy.",full:"He isn't busy."},explanation:"be動詞の否定は isn't / aren't を使います。一般動詞の doesn't と混同しないようにします。"},
+{id:"RS-W2-06",level:1,tense:"present",pattern:"doesnt",verb:"know",week:2,scene:"shopping",family:"know-store",base:true,promptJa:"彼女はその店を知りません。",contextJa:"場面：買い物の相談をしています。",primaryAnswer:"She doesn't know that store.",acceptedAnswers:["She doesn't know that store.","She does not know that store."],chunks:[{en:"She doesn't know",ja:"彼女は〜を知りません"},{en:"that store",ja:"その店を"}],hints:{structure:"She + doesn't + 動詞の原形",pattern:"She doesn't know that store.",full:"She doesn't know that store."},explanation:"know も一般動詞なので doesn't を使います。"},
+/* ---- 第3週：過去・未来・進行形への変換 ---- */
+{id:"RS-W3-01",level:1,tense:"past",pattern:"ran",verb:"run",week:3,scene:"daily",family:"run",base:true,promptJa:"彼は昨日走りました。",contextJa:"場面：第1週の run の文を過去形に変換します。",primaryAnswer:"He ran yesterday.",acceptedAnswers:["He ran yesterday.","Yesterday, he ran."],chunks:[{en:"He ran",ja:"彼は走りました"},{en:"yesterday",ja:"昨日"}],hints:{structure:"S + 過去形（ran）",pattern:"He ran / yesterday.",full:"He ran / yesterday."},explanation:"run の過去形は ran です。不規則変化は、同じ文ファミリーの変換で繰り返し当たります。"},
+{id:"RS-W3-02",level:1,tense:"future",pattern:"going-to",verb:"buy",week:3,scene:"shopping",family:"buy-bread",base:false,promptJa:"彼女は明日、新しい靴を買う予定です。",contextJa:"場面：buy の文ファミリーを未来表現に変換します。",primaryAnswer:"She is going to buy new shoes tomorrow.",acceptedAnswers:["She is going to buy new shoes tomorrow.","She's going to buy new shoes tomorrow.","She will buy new shoes tomorrow."],chunks:[{en:"She is going to buy",ja:"彼女は〜を買う予定です"},{en:"new shoes",ja:"新しい靴を"},{en:"tomorrow",ja:"明日"}],hints:{structure:"She + is going to + 動詞の原形",pattern:"She is going to buy … / tomorrow.",full:"She is going to buy new shoes / tomorrow."},explanation:"主語が she なので be動詞は is。計画には be going to が合います。"},
+{id:"RS-W3-03",level:1,tense:"prog",pattern:"be-ing",verb:"do",week:3,scene:"school",family:"do-homework",base:false,promptJa:"彼らは今、宿題をしています。",contextJa:"場面：第1週の do の文を進行形に変換します。",primaryAnswer:"They are doing their homework now.",acceptedAnswers:["They are doing their homework now."],chunks:[{en:"They are doing",ja:"彼らは〜をしています"},{en:"their homework",ja:"宿題を"},{en:"now",ja:"今"}],hints:{structure:"They + are + doing",pattern:"They are doing their homework / now.",full:"They are doing their homework / now."},explanation:"主語 they の be動詞は are。同じ do が are doing に化けます。"},
+{id:"RS-W3-04",level:1,tense:"past",pattern:"studied",verb:"study",week:3,scene:"school",family:"study-english",base:true,promptJa:"彼女は昨夜、英語を勉強しました。",contextJa:"場面：study の文ファミリーを過去形に変換します。",primaryAnswer:"She studied English last night.",acceptedAnswers:["She studied English last night."],chunks:[{en:"She studied",ja:"彼女は勉強しました"},{en:"English",ja:"英語を"},{en:"last night",ja:"昨夜"}],hints:{structure:"She + studied（y→ied）",pattern:"She studied English / last night.",full:"She studied English / last night."},explanation:"study の過去形は studied です。三単現の studies との違いも、変換で並べて覚えます。"},
+/* ---- 第4週：現在完了への変換（同じ動詞を繰り返す） ---- */
+{id:"RS-W4-01",level:2,tense:"pp-exp",pattern:"have-played",verb:"play",week:4,scene:"daily",family:"play-soccer",base:false,promptJa:"彼はサッカーをしたことがあります。",contextJa:"場面：play の文ファミリーを現在完了（経験）に変換します。",primaryAnswer:"He has played soccer before.",acceptedAnswers:["He has played soccer before.","He's played soccer before."],chunks:[{en:"He has played",ja:"彼は〜をしたことがあります"},{en:"soccer",ja:"サッカーを"},{en:"before",ja:"以前に"}],hints:{structure:"He + has + 過去分詞",pattern:"He has played soccer / before.",full:"He has played soccer / before."},explanation:"第1週 He plays → 第2週 Does he play → 第4週 He has played。同じ文の到達点です。"},
+{id:"RS-W4-02",level:2,tense:"pp-exp",pattern:"have-bought",verb:"buy",week:4,scene:"shopping",family:"buy-bread",base:false,promptJa:"彼女はそこでパンを買ったことがあります。",contextJa:"場面：buy の文ファミリーを現在完了（経験）に変換します。",primaryAnswer:"She has bought bread there before.",acceptedAnswers:["She has bought bread there before.","She's bought bread there before."],chunks:[{en:"She has bought",ja:"彼女は〜を買ったことがあります"},{en:"bread",ja:"パンを"},{en:"there",ja:"そこで"},{en:"before",ja:"以前に"}],hints:{structure:"She + has + bought",pattern:"She has bought bread / there / before.",full:"She has bought bread / there / before."},explanation:"buy → bought（過去形）→ bought（過去分詞）。形は同じでも役割が変わります。"},
+{id:"RS-W4-03",level:2,tense:"pp-cont",pattern:"have-worked-for",verb:"work",week:4,scene:"work",family:"work-hospital",base:false,promptJa:"彼はその病院で10年働いています。",contextJa:"場面：work の文ファミリーを現在完了（継続）に変換します。",primaryAnswer:"He has worked at that hospital for ten years.",acceptedAnswers:["He has worked at that hospital for ten years.","He's worked at that hospital for ten years.","He has been working at that hospital for ten years."],chunks:[{en:"He has worked",ja:"彼は働いています"},{en:"at that hospital",ja:"その病院で"},{en:"for ten years",ja:"10年間"}],hints:{structure:"He + has + 過去分詞 + for + 期間",pattern:"He has worked / at … / for …",full:"He has worked / at that hospital / for ten years."},explanation:"第1週の She works at a hospital. と同じ at の塊が、継続の文でもそのまま使えます。"},
+/* ---- 第5週以降：つなぐ編（メイン） ---- */
+{id:"RS-C-01",level:1,tense:"present",pattern:"connect-prep",verb:"play",week:5,scene:"daily",family:"play-soccer",base:false,chunkIds:["in-the-park","with-friends"],promptJa:"私は公園で友達とサッカーをします。",contextJa:"場面：第1週の一文の後ろに、場所と相手のチャンクを繋ぎます。",primaryAnswer:"I play soccer with my friends in the park.",acceptedAnswers:["I play soccer with my friends in the park.","I play soccer in the park with my friends."],chunks:[{en:"I play soccer",ja:"サッカーをします"},{en:"with my friends",ja:"友達と"},{en:"in the park",ja:"公園で"}],hints:{structure:"SVO + with … + in …",pattern:"I play soccer / with my friends / in the park.",full:"I play soccer / with my friends / in the park."},explanation:"つなぐ編の入口です。まず一文を作り、その後ろへ with〜（相手）と in〜（場所）の塊を足していきます。"},
+{id:"RS-C-02",level:1,tense:"prog",pattern:"connect-prep",verb:"wait",week:5,scene:"school",family:"wait-front",base:false,chunkIds:["in-front-of"],promptJa:"彼女は学校の前で待っています。",contextJa:"場面：待ち合わせの場所を伝えます。",primaryAnswer:"She is waiting in front of the school.",acceptedAnswers:["She is waiting in front of the school.","She's waiting in front of the school."],chunks:[{en:"She is waiting",ja:"彼女は待っています"},{en:"in front of the school",ja:"学校の前で"}],hints:{structure:"S + be + -ing + in front of …",pattern:"She is waiting / in front of the school.",full:"She is waiting / in front of the school."},explanation:"in front of 〜 は3語で1つの塊です。単語ごとに訳さず、塊のまま口に出します。"},
+{id:"RS-C-03",level:1,tense:"present",pattern:"connect-between",verb:"be",week:5,scene:"travel",family:"between",base:false,chunkIds:["between"],promptJa:"銀行は郵便局と駅の間にあります。",contextJa:"場面：道をたずねられて場所を説明します。",primaryAnswer:"The bank is between the post office and the station.",acceptedAnswers:["The bank is between the post office and the station."],chunks:[{en:"The bank is",ja:"銀行は〜にあります"},{en:"between the post office and the station",ja:"郵便局と駅の間に"}],hints:{structure:"S + is + between A and B",pattern:"The bank is / between A and B.",full:"The bank is / between the post office / and the station."},explanation:"between A and B は枠のあるチャンクです。A と B の中身だけ差し替えて、何度も違う文で使います。"},
+{id:"RS-C-04",level:1,tense:"present",pattern:"connect-prep",verb:"go",week:5,scene:"work",family:"shopping-after",base:false,chunkIds:["after-work"],promptJa:"私は仕事のあとで買い物をします。",contextJa:"場面：退勤後の予定を話します。",primaryAnswer:"I go shopping after work.",acceptedAnswers:["I go shopping after work.","I do some shopping after work."],chunks:[{en:"I go shopping",ja:"買い物をします"},{en:"after work",ja:"仕事のあとで"}],hints:{structure:"SVO + after work",pattern:"I go shopping / after work.",full:"I go shopping / after work."},explanation:"after work は時間の塊です。文の後ろにポンと足すだけで文が伸びます。"},
+{id:"RS-C-05",level:2,tense:"future",pattern:"connect-as-soon-as",verb:"get",week:5,scene:"daily",family:"call-home",base:false,chunkIds:["as-soon-as","get-home"],promptJa:"家に着いたらすぐ電話します。",contextJa:"場面：家族への連絡の約束です。as soon as を使います。",primaryAnswer:"I'll call you as soon as I get home.",acceptedAnswers:["I'll call you as soon as I get home.","I will call you as soon as I get home.","I'll call as soon as I get home."],chunks:[{en:"I'll call you",ja:"電話します"},{en:"as soon as I get home",ja:"家に着いたらすぐ"}],hints:{structure:"主文 + as soon as + 文",pattern:"I'll call you / as soon as I get home.",full:"I'll call you / as soon as I get home."},explanation:"as soon as は「〜したらすぐ」。知っていても口からは出にくい型なので、主語と動詞を変えて何度も登場させます。"},
+{id:"RS-C-06",level:2,tense:"future",pattern:"connect-as-soon-as",verb:"finish",week:5,scene:"school",family:"finish-homework",base:false,chunkIds:["as-soon-as"],promptJa:"彼女は宿題が終わったらすぐ出かけます。",contextJa:"場面：as soon as を別の主語・動詞で繰り返します。",primaryAnswer:"She will go out as soon as she finishes her homework.",acceptedAnswers:["She will go out as soon as she finishes her homework.","She'll go out as soon as she finishes her homework."],chunks:[{en:"She will go out",ja:"彼女は出かけます"},{en:"as soon as she finishes her homework",ja:"宿題が終わったらすぐ"}],hints:{structure:"主文 + as soon as + she + finishes",pattern:"She will go out / as soon as she finishes …",full:"She will go out / as soon as she finishes her homework."},explanation:"as soon as の後ろの文でも三単現の -s（finishes）は付きます。C-05 と対で繰り返します。"},
+{id:"RS-C-07",level:1,tense:"present",pattern:"connect-that",verb:"think",week:5,scene:"work",family:"think-that",base:false,chunkIds:["think-that"],promptJa:"私は彼が来ると思います。",contextJa:"場面：会議に彼が来るかどうか、見通しを言います。",primaryAnswer:"I think that he will come.",acceptedAnswers:["I think that he will come.","I think he will come.","I think he'll come."],chunks:[{en:"I think that",ja:"〜と思います"},{en:"he will come",ja:"彼が来る"}],hints:{structure:"I think that + 文",pattern:"I think that / he will come.",full:"I think that / he will come."},explanation:"that節の入口です。I think の後ろに、作れるようになった一文をそのまま繋ぎます。that は省略もできます。"},
+{id:"RS-C-08",level:1,tense:"present",pattern:"connect-that",verb:"hope",week:5,scene:"travel",family:"hope-that",base:false,chunkIds:["hope-that"],promptJa:"明日は晴れるといいなと思います。",contextJa:"場面：旅行前日に天気を気にしています。",primaryAnswer:"I hope that it will be sunny tomorrow.",acceptedAnswers:["I hope that it will be sunny tomorrow.","I hope it will be sunny tomorrow.","I hope it's sunny tomorrow."],chunks:[{en:"I hope that",ja:"〜だといいなと思います"},{en:"it will be sunny",ja:"晴れる"},{en:"tomorrow",ja:"明日は"}],hints:{structure:"I hope that + 文",pattern:"I hope that / it will be sunny / tomorrow.",full:"I hope that / it will be sunny / tomorrow."},explanation:"願いは I hope that …。think と hope で、that節の動詞を差し替えて繰り返します。"},
+{id:"RS-C-09",level:1,tense:"present",pattern:"connect-that",verb:"know",week:5,scene:"daily",family:"be-busy",base:false,chunkIds:["know-that"],promptJa:"私は彼女が忙しいと知っています。",contextJa:"場面：第1週の She is busy. を that節の中に入れます。",primaryAnswer:"I know that she is busy.",acceptedAnswers:["I know that she is busy.","I know she is busy."],chunks:[{en:"I know that",ja:"〜と知っています"},{en:"she is busy",ja:"彼女が忙しい"}],hints:{structure:"I know that + 文（SVC）",pattern:"I know that / she is busy.",full:"I know that / she is busy."},explanation:"第1週で作った She is busy. が、そのまま that節の中に入ります。土台の一文が部品になる瞬間です。"},
+{id:"RS-C-10",level:2,tense:"present",pattern:"connect-relative",verb:"be",week:5,scene:"school",family:"relative-who",base:false,chunkIds:["relative-who"],promptJa:"向こうに立っている男性は私の先生です。",contextJa:"場面：人を指して説明します。関係代名詞 who を使います。",primaryAnswer:"The man who is standing over there is my teacher.",acceptedAnswers:["The man who is standing over there is my teacher.","The man standing over there is my teacher."],chunks:[{en:"The man",ja:"男性は"},{en:"who is standing over there",ja:"向こうに立っている"},{en:"is my teacher",ja:"私の先生です"}],hints:{structure:"名詞 + who + 文 …",pattern:"The man / who is standing over there / is my teacher.",full:"The man / who is standing over there / is my teacher."},explanation:"関係代名詞は「名詞の後ろに説明の文を繋ぐ」道具です。まず名詞、次に説明、最後に文の続き、と前から組み立てます。"},
+{id:"RS-C-11",level:2,tense:"present",pattern:"connect-relative",verb:"buy",week:5,scene:"shopping",family:"buy-bread",base:false,chunkIds:["relative-that"],promptJa:"私が昨日買った本は面白いです。",contextJa:"場面：buy の文ファミリーが関係代名詞の文に化けます。",primaryAnswer:"The book that I bought yesterday is interesting.",acceptedAnswers:["The book that I bought yesterday is interesting.","The book I bought yesterday is interesting."],chunks:[{en:"The book",ja:"本は"},{en:"that I bought yesterday",ja:"私が昨日買った"},{en:"is interesting",ja:"面白いです"}],hints:{structure:"名詞 + that + S + 過去形 …",pattern:"The book / that I bought yesterday / is interesting.",full:"The book / that I bought yesterday / is interesting."},explanation:"第3週の bought が、ここでは説明の部品として再登場します。同じ動詞を何度も違う役割で使うのが螺旋です。"},
+{id:"RS-C-12",level:2,tense:"present",pattern:"connect-relative",verb:"make",week:5,scene:"daily",family:"relative-that",base:false,chunkIds:["relative-that"],promptJa:"これは彼女が作ったケーキです。",contextJa:"場面：手作りのケーキを紹介します。",primaryAnswer:"This is the cake that she made.",acceptedAnswers:["This is the cake that she made.","This is the cake she made."],chunks:[{en:"This is the cake",ja:"これはケーキです"},{en:"that she made",ja:"彼女が作った"}],hints:{structure:"This is + 名詞 + that + S + 過去形",pattern:"This is the cake / that she made.",full:"This is the cake / that she made."},explanation:"make の過去形 made が部品になっています。that は省略もできます。"},
+{id:"RS-C-13",level:1,tense:"present",pattern:"connect-because",verb:"go",week:5,scene:"daily",family:"because",base:false,chunkIds:["because"],promptJa:"忙しいので行けません。",contextJa:"場面：誘いを断る理由を言います。because を使います。",primaryAnswer:"I can't go because I'm busy.",acceptedAnswers:["I can't go because I'm busy.","I cannot go because I am busy."],chunks:[{en:"I can't go",ja:"行けません"},{en:"because I'm busy",ja:"忙しいので"}],hints:{structure:"主文 + because + 文",pattern:"I can't go / because I'm busy.",full:"I can't go / because I'm busy."},explanation:"理由は because の後ろに文を繋ぎます。第1週の I'm busy が部品です。"},
+{id:"RS-C-14",level:2,tense:"past",pattern:"connect-when",verb:"play",week:5,scene:"daily",family:"play-soccer",base:false,chunkIds:["when"],promptJa:"子どもの頃、私はよく公園で遊びました。",contextJa:"場面：昔の思い出を話します。when を使います。",primaryAnswer:"When I was a child, I often played in the park.",acceptedAnswers:["When I was a child, I often played in the park.","I often played in the park when I was a child."],chunks:[{en:"When I was a child",ja:"子どもの頃"},{en:"I often played",ja:"よく遊びました"},{en:"in the park",ja:"公園で"}],hints:{structure:"When + 過去の文, 主文（過去形）",pattern:"When I was a child, / I often played / in the park.",full:"When I was a child, / I often played / in the park."},explanation:"when の塊と in the park の塊が一文に集まりました。頻度副詞 often は動詞の前に置きます。"},
+{id:"RS-C-15",level:1,tense:"prog",pattern:"chunk-lookforward",verb:"look",week:5,scene:"travel",family:"look-forward",base:false,chunkIds:["look-forward-to"],promptJa:"私は旅行を楽しみにしています。",contextJa:"場面：定番チャンク look forward to を使います。",primaryAnswer:"I'm looking forward to the trip.",acceptedAnswers:["I'm looking forward to the trip.","I am looking forward to the trip."],chunks:[{en:"I'm looking forward to",ja:"楽しみにしています"},{en:"the trip",ja:"旅行を"}],hints:{structure:"S + be + looking forward to + 名詞",pattern:"I'm looking forward to / the trip.",full:"I'm looking forward to / the trip."},explanation:"look forward to は丸ごと1つの塊です。to の後ろは名詞（または -ing）です。"},
+{id:"RS-C-16",level:2,tense:"future",pattern:"chunk-putoff",verb:"put",week:5,scene:"work",family:"put-off",base:false,chunkIds:["put-off"],promptJa:"会議を来週に延期しましょう。",contextJa:"場面：定番チャンク put off を使います。",primaryAnswer:"Let's put off the meeting until next week.",acceptedAnswers:["Let's put off the meeting until next week.","Let's postpone the meeting until next week."],chunks:[{en:"Let's put off",ja:"延期しましょう"},{en:"the meeting",ja:"会議を"},{en:"until next week",ja:"来週まで（来週に）"}],hints:{structure:"Let's + put off + 名詞",pattern:"Let's put off the meeting / until next week.",full:"Let's put off the meeting / until next week."},explanation:"put は「置く」だけではありません。put off（延期する）のように、塊で意味が変わる組み合わせをチャンクとして覚えます。"},
+{id:"RS-C-17",level:1,tense:"present",pattern:"chunk-getoff",verb:"get",week:5,scene:"travel",family:"get-off",base:false,chunkIds:["get-off"],promptJa:"私は駅でバスを降ります。",contextJa:"場面：降りる駅を伝えます。get off を使います。",primaryAnswer:"I get off the bus at the station.",acceptedAnswers:["I get off the bus at the station."],chunks:[{en:"I get off the bus",ja:"バスを降ります"},{en:"at the station",ja:"駅で"}],hints:{structure:"S + get off + 乗り物 + at …",pattern:"I get off the bus / at the station.",full:"I get off the bus / at the station."},explanation:"get off は「（乗り物を）降りる」の塊。反対は get on です。"}
+];
+QUESTIONS = QUESTIONS.concat(NEW_QUESTIONS);
+/* 旧問題への週・編・ファミリーの割り当て */
+var WEEK_OVERRIDE = {"RS-PR-005":2,"RS-PP-106":4};
+QUESTIONS.forEach(function(q){
+if(!q.week){ q.week = WEEK_OVERRIDE[q.id] || (q.tense==="present"?1: q.tense==="pp-exp"||q.tense==="pp-comp"||q.tense==="pp-cont"?4:3);}
+if(!q.family){ q.family = q.verb || "misc";}
+if(!q.scene){
+var s=(q.contextJa||"")+(q.promptJa||"");
+q.scene = /学校|学生|宿題|授業|先生/.test(s)? "school": /会社|仕事|会議|同僚|上司|部下|資料/.test(s)? "work": /買|店|靴|ショッピング/.test(s)? "shopping": /旅行|京都|富士山|ホテル|観光/.test(s)? "travel": "daily";
+}
+if(q.base===undefined){ q.base = !(q.chunkIds && q.chunkIds.length) && q.chunks.length<=2 && !/in the park|as soon as|in front of|between|look forward|put off/.test(q.primaryAnswer);}
+});
+var QUESTION_MAP = {};
+QUESTIONS.forEach(function(q){ QUESTION_MAP[q.id]=q;});
+
+/* ============ v1.3 主語バリエーション（コース問題） ============ */
+/* 主語の差し替えが自然な問題だけに付ける。文ファミリーの変換関係は元の問題が保持し、
+   差し替え時は英語の動詞変化・所有格と日本語お題を連動させた複製を出題する。 */
+var SUBJ_VARIANTS = {
+"RS-W1-01":[{key:"she",ja:"彼女は毎朝走ります。",en:"She runs every morning.",chunks:[["She runs","彼女は走ります"],["every morning","毎朝"]]}],
+"RS-W1-02":[{key:"she",ja:"彼女は8時間寝ます。",en:"She sleeps for eight hours.",chunks:[["She sleeps","彼女は寝ます"],["for eight hours","8時間"]]}],
+"RS-W1-04":[{key:"he",ja:"彼は忙しいです。",en:"He is busy.",acc:["He is busy.","He's busy."],chunks:[["He is","彼は〜です"],["busy","忙しい"]]}],
+"RS-W1-05":[{key:"she",ja:"彼女は疲れて見えます。",en:"She looks tired.",chunks:[["She looks","彼女は〜に見えます"],["tired","疲れて"]]}],
+"RS-W1-06":[{key:"he",ja:"彼は先生です。",en:"He is a teacher.",acc:["He is a teacher.","He's a teacher."],chunks:[["He is","彼は〜です"],["a teacher","先生"]]}],
+"RS-W1-07":[{key:"she",ja:"彼女はサッカーをします。",en:"She plays soccer.",chunks:[["She plays","彼女は〜をします"],["soccer","サッカーを"]]},
+{key:"they",ja:"彼らはサッカーをします。",en:"They play soccer.",chunks:[["They play","彼らは〜をします"],["soccer","サッカーを"]]}],
+"RS-W1-08":[{key:"he",ja:"彼は英語を話します。",en:"He speaks English.",chunks:[["He speaks","彼は〜を話します"],["English","英語を"]]}],
+"RS-W1-09":[{key:"he",ja:"彼は毎朝コーヒーを飲みます。",en:"He drinks coffee every morning.",chunks:[["He drinks","彼は〜を飲みます"],["coffee","コーヒーを"],["every morning","毎朝"]]}],
+"RS-W1-10":[{key:"we",ja:"私たちは宿題をします。",en:"We do our homework.",chunks:[["We do","私たちは〜をします"],["our homework","（私たちの）宿題を"]]}],
+"RS-W1-11":[{key:"they",ja:"彼らは朝食を食べます。",en:"They eat breakfast.",acc:["They eat breakfast.","They have breakfast."],chunks:[["They eat","彼らは食べます"],["breakfast","朝食を"]]}],
+"RS-W1-13":[{key:"he",ja:"彼は病院で働いています。",en:"He works at a hospital.",chunks:[["He works","彼は働いています"],["at a hospital","病院で"]]}],
+"RS-W1-14":[{key:"he",ja:"彼は駅でパンを買います。",en:"He buys bread at the station.",chunks:[["He buys","彼は〜を買います"],["bread","パンを"],["at the station","駅で"]]}],
+"RS-W2-05":[{key:"she",ja:"彼女は忙しくありません。",en:"She isn't busy.",acc:["She isn't busy.","She is not busy.","She's not busy."],chunks:[["She isn't","彼女は〜ではありません"],["busy","忙しい"]]}],
+"RS-W3-04":[{key:"he",ja:"彼は昨夜、英語を勉強しました。",en:"He studied English last night.",chunks:[["He studied","彼は勉強しました"],["English","英語を"],["last night","昨夜"]]}],
+"RS-W4-03":[{key:"she",ja:"彼女はその病院で10年働いています。",en:"She has worked at that hospital for ten years.",acc:["She has worked at that hospital for ten years.","She's worked at that hospital for ten years.","She has been working at that hospital for ten years."],chunks:[["She has worked","彼女は働いています"],["at that hospital","その病院で"],["for ten years","10年間"]]}]
+};
+QUESTIONS.forEach(function(q){ if(SUBJ_VARIANTS[q.id]) q.variants = SUBJ_VARIANTS[q.id]; });
+function applyVariant(q){
+if(!q.variants || !q.variants.length) return q;
+if(Math.random()>=0.5) return q;
+var v = q.variants[Math.floor(Math.random()*q.variants.length)];
+var c = {}; for(var k in q) c[k]=q[k];
+c.id = q.id+"-V"+v.key;
+c.promptJa = v.ja;
+c.contextJa = "主語バリエーション：元の文（"+q.promptJa+"）の主語を差し替えて出題しています。文ファミリーは同じです。";
+c.primaryAnswer = v.en;
+c.acceptedAnswers = v.acc? v.acc.slice(): [v.en];
+c.chunks = v.chunks.map(function(p){ return {en:p[0], ja:p[1]};});
+var joined = v.chunks.map(function(p){ return p[0];}).join(" / ");
+c.hints = {structure:q.hints.structure, pattern:joined, full:joined};
+c.explanation = (q.explanation||"")+"（主語バリエーションで出題中。主語が変わると動詞の形や所有格も連動します。）";
+QUESTION_MAP[c.id]=c;
+return c;
+}
+
+var TENSES = [
+{key:"present", label:"現在形", sub:"習慣・事実を表します", types:["present"]},
+{key:"prog", label:"現在進行形", sub:"今している最中の動作", types:["prog"]},
+{key:"past", label:"過去形", sub:"終わった出来事（yesterday など）", types:["past"]},
+{key:"future", label:"未来表現", sub:"予定・その場の決定", types:["future"]},
+{key:"pp-exp", label:"現在完了・経験", sub:"〜したことがある", types:["pp-exp"]},
+{key:"pp-comp", label:"現在完了・完了／結果", sub:"もう〜した／まだ〜していない", types:["pp-comp"]},
+{key:"pp-cont", label:"現在完了・継続", sub:"ずっと〜しています", types:["pp-cont"]},
+{key:"pp-vs-past", label:"現在完了と過去形の比較", sub:"経験か、過去の一点かを見分けます", types:["pp-exp","pp-comp","past"]}
+];
+var PATTERNS = [
+{key:"have-never", label:"I’ve never …", sub:"したことがない（経験）"},
+{key:"have-been-to", label:"I’ve been to …", sub:"行ったことがある（経験）"},
+{key:"have-you-ever", label:"Have you ever …?", sub:"経験をたずねる"},
+{key:"have-just", label:"I’ve just …", sub:"〜したところ（完了）"},
+{key:"have-not-yet", label:"I haven’t … yet", sub:"まだ〜していない（完了）"},
+{key:"have-lived-for", label:"I’ve … for …", sub:"期間の継続"},
+{key:"have-past-participle", label:"I’ve + 過去分詞", sub:"現在完了の基本形"},
+{key:"went-to", label:"I went / watched …", sub:"過去形の基本"},
+{key:"going-to", label:"I’m going to …", sub:"決まっている予定"},
+{key:"be-ing", label:"I’m …-ing", sub:"進行形"}
+];
+var VERBS = ["make","take","get","go","come","give","buy","eat","drink","see","watch","look","know","think","want","need","do","have","bring","put"];
+var CATEGORIES = [
+{label:"現在形", types:["present"]},
+{label:"現在進行形", types:["prog"]},
+{label:"過去形", types:["past"]},
+{label:"未来表現", types:["future"]},
+{label:"現在完了・経験", types:["pp-exp"]},
+{label:"現在完了・完了／結果", types:["pp-comp"]},
+{label:"現在完了・継続", types:["pp-cont"]},
+{label:"疑問文・否定文", test:function(q){ return /^(Have|Did|Do)/.test(q.primaryAnswer) || /n't|not/.test(q.primaryAnswer);}},
+{label:"基本動詞・頻出チャンク", test:function(q){ return VERBS.indexOf(q.verb)>=0;}}
+];
+
+/* ============ v1.2 コース定義 ============ */
+var WEEKS = [
+{n:1, title:"第1週 ・ 現在形ドリル", sub:"SV／SVC／SVO の現在形。主語を I・we・you・he・she・they に差し替えながら、ひたすら繰り返します。焦点は三単現の -s ひとつです。", focus:"三単現の -s"},
+{n:2, title:"第2週 ・ 疑問・否定", sub:"第1週と同じ文を、疑問文と否定文に変換します。-s が does / doesn't へ移る動きを体に入れます。", focus:"does への -s の移動"},
+{n:3, title:"第3週 ・ 過去・未来・進行形", sub:"同じ文ファミリーを、過去形・未来表現・進行形に変換します。不規則変化（ran / bought / studied）もここで繰り返します。", focus:"時制の変換"},
+{n:4, title:"第4週 ・ 現在完了", sub:"螺旋の到達点です。同じ動詞を経験・完了／結果・継続の現在完了に変換し、過去形との違いを見分けます。", focus:"現在完了 vs 過去形"},
+{n:5, title:"つなぐ編（メイン）", sub:"一文の後ろへ、前置詞チャンク・that節・関係代名詞・接続の型を繋いで伸ばします。土台の一文が部品になります。", focus:"チャンクを繋ぐ", main:true}
+];
+var SCENES = [
+{key:"all", label:"全部"},
+{key:"daily", label:"日常会話編"},
+{key:"school", label:"学校編"},
+{key:"work", label:"会社編"},
+{key:"shopping", label:"ショッピング編"},
+{key:"travel", label:"旅行編"}
+];
+var SCENE_LABEL = {daily:"日常会話編", school:"学校編", work:"会社編", shopping:"ショッピング編", travel:"旅行編"};
+/* 定番チャンク台帳：主語・動詞を変えて繰り返し登場させる */
+var FIXED_CHUNKS = [
+{id:"between", cat:"枠チャンク", en:"between A and B", ja:"AとBの間に", ex:[["The bank is between the post office and the station.","銀行は郵便局と駅の間にあります"],["My house is between the park and the school.","私の家は公園と学校の間にあります"]]},
+{id:"as-soon-as", cat:"枠チャンク", en:"as soon as …", ja:"〜したらすぐ", ex:[["I'll call you as soon as I get home.","家に着いたらすぐ電話します"],["Please send it as soon as you finish it.","終わったらすぐ送ってください"]]},
+{id:"in-front-of", cat:"場所チャンク", en:"in front of …", ja:"〜の前に", ex:[["She is waiting in front of the school.","彼女は学校の前で待っています"],["Let's meet in front of the station.","駅の前で会いましょう"]]},
+{id:"in-the-park", cat:"場所チャンク", en:"in the park", ja:"公園で", ex:[["I play soccer in the park.","私は公園でサッカーをします"],["When I was a child, I often played in the park.","子どもの頃、よく公園で遊びました"]]},
+{id:"after-work", cat:"時間チャンク", en:"after work", ja:"仕事のあとで", ex:[["I go shopping after work.","仕事のあとで買い物をします"],["He plays tennis after work.","彼は仕事のあとでテニスをします"]]},
+{id:"get-home", cat:"句動詞チャンク", en:"get home", ja:"家に着く", ex:[["I usually get home at seven.","ふだん7時に家に着きます"],["I'll call you as soon as I get home.","家に着いたらすぐ電話します"]]},
+{id:"take-a-break", cat:"句動詞チャンク", en:"take a break", ja:"休憩を取る", ex:[["I took a break in the afternoon.","午後、休憩を取りました"],["Let's take a break.","休憩しましょう"]]},
+{id:"make-a-decision", cat:"句動詞チャンク", en:"make a decision", ja:"決断する", ex:[["I made a decision yesterday.","昨日、決断しました"],["I've already made a decision.","もう決断しました"]]},
+{id:"look-for", cat:"句動詞チャンク", en:"look for …", ja:"〜を探す", ex:[["I'm looking for a new job.","新しい仕事を探しています"],["I was looking for my keys then.","その時、鍵を探していました"]]},
+{id:"look-forward-to", cat:"句動詞チャンク", en:"look forward to …", ja:"〜を楽しみにしている", ex:[["I'm looking forward to the trip.","旅行を楽しみにしています"],["We're looking forward to seeing you.","お会いできるのを楽しみにしています"]]},
+{id:"put-off", cat:"句動詞チャンク", en:"put off …", ja:"〜を延期する", ex:[["Let's put off the meeting until next week.","会議を来週に延期しましょう"],["Don't put it off.","先延ばしにしないで"]]},
+{id:"get-off", cat:"句動詞チャンク", en:"get off …", ja:"（乗り物を）降りる", ex:[["I get off the bus at the station.","駅でバスを降ります"],["She got off the train at Kyoto.","彼女は京都で電車を降りました"]]},
+{id:"think-that", cat:"that節", en:"I think that …", ja:"〜と思います", ex:[["I think that he will come.","彼が来ると思います"],["I think it's a good idea.","良い考えだと思います"]]},
+{id:"hope-that", cat:"that節", en:"I hope that …", ja:"〜だといいなと思います", ex:[["I hope that it will be sunny tomorrow.","明日は晴れるといいなと思います"],["I hope you like it.","気に入ってもらえるといいなと思います"]]},
+{id:"know-that", cat:"that節", en:"I know that …", ja:"〜と知っています", ex:[["I know that she is busy.","彼女が忙しいと知っています"],["I know that he works hard.","彼がよく働くと知っています"]]},
+{id:"relative-who", cat:"関係代名詞", en:"… who …", ja:"（人）の後ろに説明を繋ぐ", ex:[["The man who is standing over there is my teacher.","向こうに立っている男性は私の先生です"],["She is the woman who helped me.","彼女は私を助けてくれた女性です"]]},
+{id:"relative-that", cat:"関係代名詞", en:"… that …", ja:"名詞の後ろに説明を繋ぐ", ex:[["The book that I bought yesterday is interesting.","私が昨日買った本は面白いです"],["This is the cake that she made.","これは彼女が作ったケーキです"]]},
+{id:"because", cat:"接続の型", en:"because …", ja:"〜ので（理由）", ex:[["I can't go because I'm busy.","忙しいので行けません"],["He was late because the train stopped.","電車が止まったので彼は遅れました"]]},
+{id:"when", cat:"接続の型", en:"when …", ja:"〜の頃／〜とき", ex:[["When I was a child, I often played in the park.","子どもの頃、よく公園で遊びました"],["Call me when you get home.","家に着いたら電話して"]]},
+{id:"with-friends", cat:"場所・相手チャンク", en:"with my friends", ja:"友達と", ex:[["I watched a movie with my friends yesterday.","昨日、友達と映画を見ました"],["I play soccer with my friends in the park.","公園で友達とサッカーをします"]]}
+];
+var CHUNK_MAP = {}; FIXED_CHUNKS.forEach(function(c){ CHUNK_MAP[c.id]=c;});
+QUESTIONS.forEach(function(q){
+if(!q.chunkIds || !q.chunkIds.length){
+/* 簡易マッチ：代表語で紐づける */
+var low = " " + q.primaryAnswer.toLowerCase() + " ";
+var hits = [];
+if(low.indexOf("as soon as")>=0) hits.push("as-soon-as");
+if(low.indexOf("in front of")>=0) hits.push("in-front-of");
+if(low.indexOf("between")>=0) hits.push("between");
+if(low.indexOf("in the park")>=0) hits.push("in-the-park");
+if(low.indexOf("after work")>=0) hits.push("after-work");
+if(low.indexOf("get home")>=0||low.indexOf("got home")>=0) hits.push("get-home");
+if(low.indexOf("take a break")>=0||low.indexOf("took a break")>=0) hits.push("take-a-break");
+if(low.indexOf("decision")>=0) hits.push("make-a-decision");
+if(low.indexOf("looking for")>=0) hits.push("look-for");
+if(low.indexOf("looking forward to")>=0) hits.push("look-forward-to");
+if(low.indexOf("put off")>=0) hits.push("put-off");
+if(low.indexOf("get off")>=0) hits.push("get-off");
+if(low.indexOf("i think")>=0) hits.push("think-that");
+if(low.indexOf("i hope")>=0) hits.push("hope-that");
+if(low.indexOf("i know that")>=0) hits.push("know-that");
+if(low.indexOf(" who ")>=0) hits.push("relative-who");
+if(/ (that|which) (i|she|he|they|we|you) /.test(low)) hits.push("relative-that");
+if(low.indexOf("because")>=0) hits.push("because");
+if(low.indexOf("when i was")>=0||low.indexOf("when you")>=0) hits.push("when");
+if(low.indexOf("with my friends")>=0) hits.push("with-friends");
+q.chunkIds = hits;
+}
+});
+/* 動詞台帳34語（SV／SVC／SVO分類） */
+var VERB_INVENTORY = [
+["be","SVC","全編","She is busy."],["get","SVC","日常・旅行","I get home at seven."],["look","SVC","日常","He looks tired."],
+["go","SV","全編","They go by train."],["come","SV","日常・学校","They come to school by bus."],["sleep","SV","日常","He sleeps for eight hours."],["wake","SV","日常","I wake up at six."],["run","SV","日常","He runs every morning."],["live","SV","日常・旅行","I've lived in Tokyo for ten years."],["work","SV","会社","She works at a hospital."],
+["play","SVO","日常・学校","He plays soccer."],["study","SVO","学校","He studies at the library."],["speak","SVO","学校・旅行","She speaks English."],["read","SVO","学校・日常","I've already read that book."],["write","SVO","学校・会社","I write emails every day."],["watch","SVO","日常","I watched a movie yesterday."],["see","SVO","日常・旅行","I've seen that movie before."],["meet","SVO","日常・会社","I've met him before."],["eat","SVO","日常","We eat breakfast."],["drink","SVO","日常","She drinks coffee every morning."],["buy","SVO","ショッピング","She buys bread at the station."],["give","SVO","日常・会社","I'll give you a call tomorrow."],["put","SVO","会社","Let's put off the meeting."],["bring","SVO","会社・旅行","He is bringing the documents now."],["take","SVO","日常・会社","I took a break."],["make","SVO","日常・会社","I made a decision yesterday."],["have","SVO","全編","We had a good time."],["do","SVO","学校・日常","They do their homework."],["know","SVO","全編","I know that she is busy."],["think","SVO","会社・日常","I think that he will come."],["want","SVO","日常・ショッピング","I want to drink coffee."],["need","SVO","日常・会社","I need more time."],["help","SVO","日常・学校","She helped me."],["thank","SVO","全編","Thank you for your help."]
+];
+/* 実力テスト10問：段階タグ付き */
+var PLACEMENT = [
+{id:"RS-W1-07", stage:1},{id:"RS-W1-04", stage:1},
+{id:"RS-W2-01", stage:2},{id:"RS-W2-02", stage:2},
+{id:"RS-PA-004", stage:3},{id:"RS-W3-03", stage:3},{id:"RS-FU-001", stage:3},
+{id:"RS-PP-001", stage:4},{id:"RS-PP-102", stage:4},
+{id:"RS-C-05", stage:5}
+];
+var STAGE_NAMES = {1:"第1週 ・ 現在形（SV／SVC／SVO）",2:"第2週 ・ 疑問・否定",3:"第3週 ・ 過去・進行形・未来",4:"第4週 ・ 現在完了",5:"つなぐ編"};
+var RANK_NAMES = {1:"土台づくりランク",2:"変換スタートランク",3:"時制チャレンジランク",4:"現在完了タッチランク",5:"つなぐ編レディ",6:"つなぐ編マスター見込み"};
+var placementResult = null;
+var courseState = {week:1, scene:"all", count:10};
+
+/* ============ 状態 ============ */
+var settings = {count:10, level:1, input:"voice", hints:"on", modelPlay:"manual", advance:"manual", lang:"en-US"};
+var histLog = []; /* {questionId, answeredAt, answerText, recognitionStatus, evaluationStatus, hintLevel, attemptNumber} */
+var userAnswers = {}; /* questionId -> [追加した許容回答] */
+var session = null; /* {modeLabel, queue, idx, results, attempt, hintLevel, startedAt} */
+var pickState = {mode:null, count:10};
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+var recog = null, listening = false;
+
+function $(id){ return document.getElementById(id);}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove("on");},2200);}
+function show(id){ document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("on");}); $(id).classList.add("on"); window.scrollTo(0,0); refreshHomeStats();}
+
+/* ============ 判定（仕様書 §8） ============ */
+var CONTRACTIONS = [
+[/\bi've\b/g,"i have"],[/\bwe've\b/g,"we have"],[/\byou've\b/g,"you have"],[/\bthey've\b/g,"they have"],
+[/\bhe's\b/g,"he has"],[/\bshe's\b/g,"she has"],[/\bit's\b/g,"it is"],
+[/\bhaven't\b/g,"have not"],[/\bhasn't\b/g,"has not"],[/\bdon't\b/g,"do not"],[/\bdoesn't\b/g,"does not"],[/\bdidn't\b/g,"did not"],
+[/\bi'm\b/g,"i am"],[/\bhe is\b/g,"he is"],[/\bi'll\b/g,"i will"],[/\blet's\b/g,"let us"],
+[/\bi'd\b/g,"i would"],[/\bcan't\b/g,"can not"],[/\bwon't\b/g,"will not"]
+];
+function normalize(s){
+var t = " " + String(s||"").toLowerCase() + " ";
+CONTRACTIONS.forEach(function(p){ t = t.replace(p[0], p[1]);});
+t = t.replace(/[’]/g,"'").replace(/[.,!?;:"“”'()]/g," ");
+t = t.replace(/\s+/g," ").trim();
+return t;
+}
+var lastEvalLenientS = false;
+/* 三単現 -s の正規化マップ：動詞台帳と問題データの動詞から、-s 形→原形を作る */
+var SFOR_MAP = {};
+(function(){
+var bases = {};
+VERB_INVENTORY.forEach(function(v){ bases[v[0]]=1;});
+VERBS.forEach(function(v){ bases[v]=1;});
+QUESTIONS.forEach(function(q){ if(q.verb) bases[q.verb]=1;});
+Object.keys(bases).forEach(function(base){
+if(base==="be") return; /* be動詞（is/are）は -s の話ではないので対象外 */
+var f;
+if(base==="have") f="has";
+else if(base==="do") f="does";
+else if(/(s|x|z|ch|sh|o)$/.test(base)) f=base+"es";
+else if(/[^aeiou]y$/.test(base)) f=base.slice(0,-1)+"ies";
+else f=base+"s";
+if(f!==base) SFOR_MAP[f]=base;
+});
+})();
+var NO_STRIP_PREV = {"the":1,"a":1,"an":1,"my":1,"his":1,"her":1,"their":1,"our":1,"your":1,"this":1,"that":1,"these":1,"those":1};
+var AUX_PREV = {"does":1,"do":1,"did":1,"not":1,"can":1,"could":1,"will":1,"would":1,"shall":1,"should":1,"must":1,"may":1,"might":1};
+function stripThirdS(norm){
+/* 三単現の -s だけが違う文を同じ文にそろえる（甘め判定用）。
+   落ちた場合（He play soccer）だけでなく、疑問・否定で付け過ぎた場合
+   （Does he plays? / She doesn't drinks）や has→have の抜けも対象にする。
+   台帳にない動詞は、主語・助動詞の直後にある場合に限り規則でそろえる。 */
+var toks = norm.split(" ");
+var out = toks.map(function(t,i){
+var prev = toks[i-1];
+if(NO_STRIP_PREV[prev]) return t;
+if(SFOR_MAP[t]) return SFOR_MAP[t];
+if((prev==="he"||prev==="she"||prev==="it"||AUX_PREV[prev]) && t.length>3){
+if(/ies$/.test(t)) return t.slice(0,-3)+"y";
+if(/(ches|shes|sses|xes|zes|oes)$/.test(t)) return t.slice(0,-2);
+if(/s$/.test(t) && !/ss$/.test(t)) return t.slice(0,-1);
+}
+return t;
+});
+return out.join(" ");
+}
+function evaluate(q, answerText){
+lastEvalLenientS = false;
+var mine = normalize(answerText);
+if(!mine) return "fail";
+var cands = [q.primaryAnswer].concat(q.acceptedAnswers||[]).concat(userAnswers[q.id]||[]);
+for(var i=0;i<cands.length;i++){ if(normalize(cands[i])===mine) return "accepted";}
+/* v1.2 甘め判定：三単現の -s の有無だけの違いは正解として扱う（未判定にも落とさない） */
+var mineL = stripThirdS(mine);
+for(var j=0;j<cands.length;j++){ if(stripThirdS(normalize(cands[j]))===mineL){ lastEvalLenientS = true; return "accepted";}}
+return "unjudged";
+}
+
+/* ============ 音声 ============ */
+function speak(text, lang){
+if(!("speechSynthesis" in window)){ toast("このブラウザは音声再生に対応していません"); return;}
+try{
+speechSynthesis.cancel();
+var u = new SpeechSynthesisUtterance(text);
+u.lang = lang || settings.lang; u.rate = 0.95;
+speechSynthesis.speak(u);
+}catch(e){ toast("音声を再生できませんでした");}
+}
+function speakChunks(q){
+if(!("speechSynthesis" in window)){ toast("このブラウザは音声再生に対応していません"); return;}
+speechSynthesis.cancel();
+q.chunks.forEach(function(c,i){
+var u = new SpeechSynthesisUtterance(c.en.replace(/[.?]$/,""));
+u.lang = settings.lang; u.rate = 0.9;
+speechSynthesis.speak(u);
+});
+}
+function setMicState(main, sub){
+$("mic-state").innerHTML = esc(main) + (sub? "<small>"+esc(sub)+"</small>": "");
+}
+function startRecognition(){
+if(!SR){ showRecogError("このブラウザは音声認識に対応していません。テキスト入力で回答できます。", true); return;}
+if(listening) return;
+try{
+recog = new SR();
+recog.lang = settings.lang; recog.interimResults = false; recog.maxAlternatives = 1;
+listening = true;
+$("btn-mic").classList.add("listening");
+setMicState("聞き取り中…", "英語で話してください");
+hideRecogError();
+recog.onresult = function(ev){
+var text = ev.results[0][0].transcript || "";
+stopMicUI();
+if(text.trim()){ submitAnswer(text.trim(), "success");}
+else { showRecogError("音声を認識できませんでした。もう一度お試しください。発音の問題とは限りません。マイクの許可や周囲の音もご確認ください。", false);}
+};
+recog.onerror = function(ev){
+stopMicUI();
+if(ev.error === "not-allowed"){ showRecogError("マイクの使用が許可されていません。ブラウザの設定でマイクを許可するか、テキスト入力をご利用ください。", true);}
+else if(ev.error === "no-speech"){ showRecogError("声が聞き取れませんでした。もう一度、少し大きめの声でお試しください。", false);}
+else { showRecogError("音声を認識できませんでした。もう一度お試しください。認識できなかったことは、発音が悪いということではありません。", false);}
+};
+recog.onend = function(){ stopMicUI();};
+recog.start();
+}catch(e){ stopMicUI(); showRecogError("音声認識を開始できませんでした。テキスト入力をご利用ください。", true);}
+}
+function stopMicUI(){ listening=false; $("btn-mic").classList.remove("listening"); if($("phase-ask").style.display!=="none") setMicState("押して話す","英語で声に出して言ってみましょう");}
+function showRecogError(msg, offerText){
+var b=$("recog-error"); b.textContent=msg; b.classList.add("on");
+if(offerText) openTextInput();
+}
+function hideRecogError(){ $("recog-error").classList.remove("on");}
+
+/* ============ 出題ロジック（仕様書 §12） ============ */
+function shuffleArr(a){ var x=a.slice(); for(var i=x.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=x[i];x[i]=x[j];x[j]=t;} return x;}
+function byLevel(list){
+if(settings.level===1) return list.filter(function(q){return q.level===1;}).length>=3? list.filter(function(q){return q.level===1;}): list;
+if(settings.level===2) return list.filter(function(q){return q.level<=2;});
+return list;
+}
+function buildQueue(mode, key){
+var pool = QUESTIONS.slice();
+if(mode==="pattern"){ pool = pool.filter(function(q){return q.pattern===key;});}
+else if(mode==="tense"){
+var t = TENSES.filter(function(x){return x.key===key;})[0];
+pool = pool.filter(function(q){return t.types.indexOf(q.tense)>=0;});
+if(settings.level>=2 && key!=="pp-vs-past"){
+var others = QUESTIONS.filter(function(q){return t.types.indexOf(q.tense)<0 && (q.tense==="past"||q.tense.indexOf("pp")===0);});
+pool = pool.concat(shuffleArr(others).slice(0,2));
+}
+}
+else if(mode==="verb"){ pool = pool.filter(function(q){return q.verb===key;});}
+else if(mode==="weak"){
+var weakIds = weakQuestionIds();
+pool = pool.filter(function(q){return weakIds.indexOf(q.id)>=0;});
+if(pool.length===0) pool = QUESTIONS.slice();
+}
+pool = byLevel(pool);
+var n = Math.min(pickState.count, pool.length);
+var picked = [], rest = shuffleArr(pool), lastPattern = null, guard=0;
+while(picked.length<n && rest.length && guard<500){
+guard++;
+var cand = rest.shift();
+if(mode==="shuffle" && lastPattern && cand.pattern===lastPattern && rest.length){ rest.push(cand); continue;}
+picked.push(cand); lastPattern = cand.pattern;
+}
+return picked;
+}
+function weakQuestionIds(){
+var score = {};
+histLog.forEach(function(h){
+if(h.attemptNumber!==1) return;
+if(h.hintLevel>0) score[h.questionId]=(score[h.questionId]||0)+2;
+if(h.evaluationStatus==="unjudged") score[h.questionId]=(score[h.questionId]||0)+2;
+if(h.evaluationStatus==="skipped") score[h.questionId]=(score[h.questionId]||0)+1;
+});
+QUESTIONS.forEach(function(q){ if(masteryOf(q.id)===0) score[q.id]=(score[q.id]||0)+1;});
+return Object.keys(score).filter(function(k){return score[k]>0;}).sort(function(a,b){return score[b]-score[a];});
+}
+function masteryOf(qid){
+var firsts = histLog.filter(function(h){return h.questionId===qid && h.attemptNumber===1;});
+if(!firsts.length) return 0;
+var okNoHint = firsts.filter(function(h){return h.evaluationStatus==="accepted" && h.hintLevel===0;}).length;
+var ok = firsts.filter(function(h){return h.evaluationStatus==="accepted";}).length;
+if(firsts.length>=2 && okNoHint>=2) return 3;
+if(ok>=1 && okNoHint>=1) return 2;
+return 1;
+}
+
+/* ============ セッション進行 ============ */
+function startSession(modeLabel, queue, kind){
+if(!queue.length){ toast("出題できる問題がありません"); return;}
+session = {modeLabel:modeLabel, queue:queue, idx:0, results:[], attempt:1, hintLevel:0, kind:kind||"free"};
+show("scr-practice");
+renderQuestion();
+}
+function currentQ(){ return session.queue[session.idx];}
+function renderQuestion(){
+var q = currentQ();
+session.attempt = 1; session.hintLevel = 0; session.startedAt = Date.now();
+$("p-mode-name").textContent = session.modeLabel;
+$("p-count").textContent = (session.idx+1) + " / " + session.queue.length;
+$("p-bar").style.width = Math.round(session.idx/session.queue.length*100) + "%";
+$("p-ja").textContent = q.promptJa;
+$("p-ctx").textContent = q.contextJa || "";
+var ctxEl=$("p-ctx");
+if(q.chunkIds && q.chunkIds.length){
+var tagSpan=document.createElement("span"); tagSpan.style.display="block"; tagSpan.style.marginTop="8px";
+tagSpan.innerHTML = q.chunkIds.map(function(cid){ var c=CHUNK_MAP[cid]; return c? "<span class=\"chunk-tag\">🧩 "+esc(c.en)+"</span>": "";}).join("");
+ctxEl.appendChild(tagSpan);
+}
+$("phase-ask").style.display = "";
+$("phase-result").style.display = "none";
+$("hint-box").classList.remove("on");
+$("text-zone").classList.remove("on");
+$("text-answer").value = "";
+hideRecogError();
+$("btn-hint").disabled = (settings.hints==="off");
+$("btn-hint").textContent = "💡 ヒント";
+setMicState("押して話す","英語で声に出して言ってみましょう");
+$("mic-zone").style.display = (settings.input==="text")? "none": "";
+if(settings.input==="text") openTextInput();
+}
+function openTextInput(){ $("text-zone").classList.add("on"); setTimeout(function(){ try{$("text-answer").focus();}catch(e){}},60);}
+function showHint(){
+var q = currentQ();
+if(session.hintLevel>=3) return;
+session.hintLevel++;
+var box=$("hint-box"), label=$("hint-label"), body=$("hint-body");
+box.classList.add("on");
+if(session.hintLevel===1){ label.textContent="ヒント1 ・ 英文の骨格"; body.textContent=q.hints.structure;}
+else if(session.hintLevel===2){ label.textContent="ヒント2 ・ チャンクの骨格"; body.textContent=q.hints.pattern;}
+else { label.textContent="ヒント3 ・ お手本"; body.textContent=q.hints.full;}
+$("btn-hint").textContent = session.hintLevel>=3? "ヒント表示済み": "💡 次のヒント";
+if(session.hintLevel>=3) $("btn-hint").disabled = true;
+}
+function submitAnswer(text, recogStatus){
+var q = currentQ();
+var status = evaluate(q, text);
+var rec = {
+questionId:q.id, answeredAt:new Date().toISOString(), answerText:text,
+recognitionStatus:recogStatus||"text", evaluationStatus:status,
+hintLevel:session.hintLevel, attemptNumber:session.attempt,
+responseStartMs:null, responseDurationMs: session.startedAt? (Date.now()-session.startedAt): null
+};
+histLog.push(rec);
+session.results.push({q:q, rec:rec});
+renderResult(q, text, status);
+}
+function renderResult(q, text, status){
+$("phase-ask").style.display="none";
+$("phase-result").style.display="";
+var v=$("verdict");
+v.className = "verdict " + (status==="accepted"? "ok": "un");
+if(status==="accepted"){
+$("v-icon").textContent = session.hintLevel>=3? "🟡": "🟢";
+$("v-title").textContent = session.hintLevel>=3? "お手本を確認しました": "正解！";
+$("v-msg").textContent = session.hintLevel>=3? "ヒント3（お手本）を見たので、自力の正解とは分けて記録しました。": lastEvalLenientS? "正解です。三単現の -s だけが違っていましたが、甘め判定で正解として扱いました。-s は落ちやすく、疑問文では付け過ぎも起きやすいので、ドリルで口に馴染ませましょう。": "正解です。自然な英語です。";
+$("btn-ai").style.display="none";
+}else{
+$("v-icon").textContent="🟡";
+$("v-title").textContent="未判定";
+$("v-msg").textContent="模範解答とは異なります。あなたの英文も正しい可能性があります。不正解としては記録しません。";
+$("btn-ai").style.display="";
+}
+$("r-your").textContent = text;
+$("r-explain").textContent = q.explanation || "";
+$("ai-box").classList.remove("on");
+setModelView("normal", q);
+$("btn-next").textContent = (session.idx>=session.queue.length-1)? "結果を見る ›": "次の問題へ ›";
+if(settings.modelPlay==="auto"){ setTimeout(function(){ speak(q.primaryAnswer);},350);}
+if(status==="accepted" && settings.advance==="auto" && session.hintLevel<3){
+setTimeout(function(){ if($("scr-practice").classList.contains("on")) nextQuestion();}, 2600);
+}
+}
+function setModelView(view, q){
+q = q || currentQ();
+$("tg-normal").classList.toggle("sel", view==="normal");
+$("tg-chunk").classList.toggle("sel", view==="chunk");
+$("model-normal").style.display = view==="normal"? "": "none";
+$("model-chunks").style.display = view==="chunk"? "flex": "none";
+$("model-normal").textContent = q.primaryAnswer;
+var wrap = $("model-chunks"); wrap.innerHTML="";
+q.chunks.forEach(function(c){
+var b=document.createElement("button"); b.className="chunk"; b.type="button";
+b.innerHTML = esc(c.en) + "<span class=\"chunk-ja\">"+esc(c.ja)+"</span><small>タップで意味 ・ 🔊で再生</small>";
+b.addEventListener("click", function(){ b.classList.toggle("open"); speak(c.en.replace(/[.?]$/,""));});
+wrap.appendChild(b);
+});
+}
+function nextQuestion(){
+if(session.idx>=session.queue.length-1){ renderSummary(); show("scr-summary"); return;}
+session.idx++;
+renderQuestion();
+}
+function skipQuestion(){
+var q=currentQ();
+var rec={questionId:q.id, answeredAt:new Date().toISOString(), answerText:"", recognitionStatus:"skipped", evaluationStatus:"skipped", hintLevel:session.hintLevel, attemptNumber:session.attempt, responseStartMs:null, responseDurationMs:null};
+histLog.push(rec);
+session.results.push({q:q, rec:rec, skipped:true});
+nextQuestion();
+}
+function retryQuestion(){
+session.attempt++;
+session.startedAt = Date.now();
+$("phase-result").style.display="none";
+$("phase-ask").style.display="";
+setMicState("もう一度話す","お手本を思い出しながら、声に出してみましょう");
+if(settings.input==="text") openTextInput();
+}
+function renderSummary(){
+if(session && session.kind==="placement") computePlacement();
+$("placement-result").style.display = (session && session.kind==="placement")? "": "none";
+var total = session.results.length;
+var firstOk = session.results.filter(function(r){return!r.skipped && r.rec.attemptNumber===1 && r.rec.evaluationStatus==="accepted" && r.rec.hintLevel<3;}).length;
+$("sum-score").textContent = firstOk + " / " + total;
+$("sum-msg").textContent = firstOk===total? "全問、自力で正解しました。この調子で続けましょう。":
+"セットが終わりました。未判定は「間違い」ではありません。気になる文はAI相談や復習で確認できます。";
+var list=$("sum-list"); list.innerHTML="";
+var seen={};
+session.results.forEach(function(r){
+if(seen[r.q.id]) return; seen[r.q.id]=1;
+var div=document.createElement("div"); div.className="review-item";
+var badge = r.skipped? "<span class=\"badge un\">スキップ</span>":
+(r.rec.evaluationStatus==="accepted"? (r.rec.hintLevel>0? "<span class=\"badge hint\">ヒント使用</span><span class=\"badge ok\">正解</span>": "<span class=\"badge ok\">正解</span>"): "<span class=\"badge un\">未判定</span>");
+div.innerHTML = badge + "<div class=\"r-ja\">"+esc(r.q.promptJa)+"</div><div class=\"r-en\">"+esc(r.q.primaryAnswer)+"</div>" +
+(r.rec.answerText? "<div class=\"r-en\">あなたの回答："+esc(r.rec.answerText)+"</div>": "");
+list.appendChild(div);
+});
+}
+
+/* ============ AI相談（仕様書 §9） ============ */
+function buildAiText(){
+var q=currentQ();
+var your = $("r-your").textContent;
+return [
+"英語の発話練習の添削をお願いします。",
+"",
+"", q.promptJa,
+q.contextJa? "\n"+q.contextJa: "",
+"", your,
+"", q.primaryAnswer,
+"",
+"",
+"1. 模範解答と異なっても、自然な英語なら正解としてください。",
+"2. 正しい英文を無理に書き換えないでください。",
+"3. 不自然な場合は、私が使った動詞や表現をできるだけ残して直してください。",
+"4. 私の表現を残すと意味が変わる場合は、その理由を説明してください。",
+"5. 語順・時制・動詞の使い方を簡潔に説明してください。",
+"6. 実際の会話で自然な表現を優先してください。",
+"7. 必要以上に難しい語彙へ置き換えないでください。"
+].filter(function(x){return x!=="";}).join("\n");
+}
+
+/* ============ 記録・集計 ============ */
+function refreshHomeStats(){
+var today = new Date().toDateString();
+$("stat-total").textContent = histLog.length;
+$("stat-ok").textContent = histLog.filter(function(h){return h.attemptNumber===1 && h.evaluationStatus==="accepted" && h.hintLevel<3;}).length;
+$("stat-streak").textContent = histLog.filter(function(h){return new Date(h.answeredAt).toDateString()===today;}).length;
+}
+function renderRecords(){
+renderDiagnosis();
+var ml=$("mastery-list"); ml.innerHTML="";
+CATEGORIES.forEach(function(cat){
+var qs = QUESTIONS.filter(function(q){ return cat.test? cat.test(q): cat.types.indexOf(q.tense)>=0;});
+var levels = qs.map(function(q){return masteryOf(q.id);});
+var studied = levels.filter(function(l){return l>0;});
+var avg = studied.length? studied.reduce(function(a,b){return a+b;},0)/studied.length: 0;
+var stage =!studied.length? "未学習": avg<1.5? "練習中": avg<2.5? "おおむね習得": "反射的に発話できる";
+var filled = Math.round(avg);
+var row=document.createElement("div"); row.className="mastery-row";
+row.innerHTML = "<b>"+esc(cat.label)+"</b><span class=\"stars\">"+"★".repeat(filled)+"☆".repeat(3-filled)+"<small>"+esc(stage)+"（"+studied.length+"/"+qs.length+"問）</small></span>";
+ml.appendChild(row);
+});
+var genFirst={}; histLog.forEach(function(h){ if(h.questionId.indexOf("GEN-")===0 && h.attemptNumber===1 && !genFirst[h.questionId]) genFirst[h.questionId]=h;});
+var genList=Object.keys(genFirst).map(function(k){return genFirst[k];});
+if(genList.length){ var gOk=genList.filter(function(h){return h.evaluationStatus==="accepted";}).length; var gFilled=Math.round(gOk/genList.length*3); var grow=document.createElement("div"); grow.className="mastery-row"; grow.innerHTML="<b>動詞ドリル（生成問題）</b><span class=\"stars\">"+"★".repeat(gFilled)+"☆".repeat(3-gFilled)+"<small>初回 "+gOk+" / "+genList.length+" 問正解（動詞×主語×形）</small></span>"; ml.appendChild(grow);}
+var hl=$("histLog-list"); hl.innerHTML="";
+if(!histLog.length){ hl.innerHTML="<div class=\"empty-box\">まだ記録がありません。ホームから練習を始めましょう。</div>";}
+histLog.slice(-20).reverse().forEach(function(h){
+var q=QUESTION_MAP[h.questionId]; if(!q) return;
+var div=document.createElement("div"); div.className="review-item";
+var badge = h.evaluationStatus==="accepted"? "<span class=\"badge ok\">正解</span>": h.evaluationStatus==="unjudged"? "<span class=\"badge un\">未判定</span>": "<span class=\"badge un\">スキップ</span>";
+if(h.hintLevel>0) badge += "<span class=\"badge hint\">ヒント"+h.hintLevel+"</span>";
+if(h.attemptNumber>1) badge += "<span class=\"badge un\">再発話</span>";
+div.innerHTML = badge + "<div class=\"r-ja\">"+esc(q.promptJa)+"</div>" + (h.answerText? "<div class=\"r-en\">"+esc(h.answerText)+"</div>": "") +
+"<div class=\"r-en\">"+new Date(h.answeredAt).toLocaleString("ja-JP")+"</div>";
+hl.appendChild(div);
+});
+}
+
+/* ============ バックアップ（仕様書 §14） ============ */
+function exportJson(){
+var data = {app:"repeat-speaking", version:2, exportedAt:new Date().toISOString(), settings:settings, history:histLog, userAnswers:userAnswers, placement:placementResult};
+var blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+var a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="ripisura-backup.json";
+document.body.appendChild(a); a.click(); a.remove();
+setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+toast("バックアップを書き出しました");
+}
+function importJson(file){
+var reader=new FileReader();
+reader.onload=function(){
+try{
+var data=JSON.parse(reader.result);
+if(!data || data.app!=="repeat-speaking" ||!Array.isArray(data.history)) throw new Error("bad");
+data.history.forEach(function(h){ if(!h.questionId || typeof h.questionId!=="string") throw new Error("bad");});
+histLog = data.history;
+userAnswers = (data.userAnswers && typeof data.userAnswers==="object")? data.userAnswers: {};
+placementResult = (data.placement && typeof data.placement==="object")? data.placement: placementResult;
+refreshRankBox();
+if(data.settings) { Object.keys(settings).forEach(function(k){ if(data.settings[k]!==undefined) settings[k]=data.settings[k];}); syncSettingUI();}
+renderRecords(); refreshHomeStats();
+toast("バックアップを読み込みました");
+}catch(e){ toast("読み込めませんでした。ファイルの形式が正しくないため、既存の記録はそのまま保持しています。");}
+};
+reader.readAsText(file);
+}
+
+/* ============ 選択画面 ============ */
+function openPick(mode){
+pickState.mode = mode; pickState.count = settings.count;
+document.querySelectorAll("#pick-count button").forEach(function(b){ b.classList.toggle("sel", Number(b.dataset.v)===pickState.count);});
+var list=$("pick-list"); list.innerHTML="";
+if(mode==="pattern"){
+$("pick-title").textContent="型の練習"; $("pick-sub").textContent="繰り返したい文型を選んでください。";
+PATTERNS.forEach(function(p){
+var n = QUESTIONS.filter(function(q){return q.pattern===p.key;}).length;
+if(!n) return;
+addPick(list, p.label, p.sub, n+"問", function(){ startSession("型の練習 ・ "+p.label, buildQueue("pattern", p.key));});
+});
+}else if(mode==="tense"){
+$("pick-title").textContent="時制の練習"; $("pick-sub").textContent="練習したい時制を選んでください。現在完了は3つに分かれます。";
+TENSES.forEach(function(t){
+var n = QUESTIONS.filter(function(q){return t.types.indexOf(q.tense)>=0;}).length;
+addPick(list, t.label, t.sub, n+"問", function(){ startSession("時制 ・ "+t.label, buildQueue("tense", t.key));});
+});
+}else if(mode==="verb"){
+$("pick-title").textContent="動詞の練習"; $("pick-sub").textContent="基本動詞と頻出チャンクを選びます。";
+VERBS.forEach(function(v){
+var n = QUESTIONS.filter(function(q){return q.verb===v;}).length;
+if(!n) return;
+addPick(list, v, "この動詞を含む問題", n+"問", function(){ startSession("動詞 ・ "+v, buildQueue("verb", v));});
+});
+}
+show("scr-pick");
+}
+function addPick(list, title, sub, cnt, fn){
+var b=document.createElement("button"); b.className="pick"; b.type="button";
+b.innerHTML="<span><b>"+esc(title)+"</b><small>"+esc(sub)+"</small></span><span class=\"cnt\">"+esc(cnt)+" ›</span>";
+b.addEventListener("click", fn);
+list.appendChild(b);
+}
+
+/* ============ 設定UI ============ */
+function syncSettingUI(){
+document.querySelectorAll("[data-setting]").forEach(function(seg){
+var key=seg.dataset.setting;
+seg.querySelectorAll("button").forEach(function(b){
+var v=b.dataset.v;
+var cur = String(settings[key]);
+b.classList.toggle("sel", v===cur || (key==="level" && v===cur));
+});
+});
+}
+function bindSettings(){
+document.querySelectorAll("[data-setting]").forEach(function(seg){
+seg.querySelectorAll("button").forEach(function(b){
+b.addEventListener("click", function(){
+var key=seg.dataset.setting, v=b.dataset.v;
+settings[key] = (key==="count"||key==="level")? Number(v): v;
+syncSettingUI();
+toast("設定を変更しました");
+});
+});
+});
+}
+
+/* ============ v1.2: 実力テスト・コース・診断 ============ */
+CATEGORIES.push(
+{label:"第1週 ・ 現在形ドリル", test:function(q){return q.week===1;}},
+{label:"第2週 ・ 疑問・否定", test:function(q){return q.week===2;}},
+{label:"第3週 ・ 過去・未来・進行形", test:function(q){return q.week===3;}},
+{label:"第4週 ・ 現在完了", test:function(q){return q.week===4;}},
+{label:"つなぐ編（定番チャンク含む）", test:function(q){return q.week===5;}}
+);
+function stageOf(qid){ var p=PLACEMENT.filter(function(x){return x.id===qid;})[0]; return p? p.stage: null;}
+function computePlacement(){
+var score={}; PLACEMENT.forEach(function(p){ score[p.stage]=score[p.stage]||{ok:0,total:0}; score[p.stage].total++;});
+var seen={};
+session.results.forEach(function(r){
+if(r.skipped||seen[r.q.id]) return; seen[r.q.id]=1;
+var st=stageOf(r.q.id); if(!st) return;
+if(r.rec.evaluationStatus==="accepted") score[st].ok++;
+});
+function fullCleared(st){ var s=score[st]; if(!s) return true; return s.ok===s.total || (s.total===3 && s.ok>=2);}
+function passable(st){ var s=score[st]; if(!s) return true; return s.ok*2>=s.total;}
+/* 進行判定は甘め：各段階は半分以上言えれば「先へ進んでよい」とし、
+   開始週は半分に届かなかった最初の段階にする。穴は螺旋の復習で回収する。 */
+var startWeek=6;
+for(var st=1; st<=5; st++){ if(!passable(st)){ startWeek=st; break;}}
+var weak=[]; for(var s2=1;s2<=5;s2++){ if(score[s2] && score[s2].ok<score[s2].total) weak.push(STAGE_NAMES[s2]);}
+placementResult = {startWeek:startWeek, rank:RANK_NAMES[startWeek], score:score, weak:weak, at:new Date().toISOString()};
+/* 結果画面 */
+$("pl-rank").textContent = placementResult.rank;
+var baseOk = score[1]? score[1].ok: 0;
+$("pl-msg").textContent = startWeek>=6? "全段階とも半分以上言えました。判定は甘めにしていますので、このまま つなぐ編で、チャンクを繋いで文を伸ばす練習を中心に進めましょう。穴のあいた段階は螺旋の復習で回収します。":
+"おすすめの開始位置は「"+(startWeek===5? "つなぐ編": "第"+startWeek+"週")+"」です。判定は甘めで、各段階は半分以上言えれば先へ進んでよいものとしています。ランクは仮置きで、コースの結果で補正していきます。先の週へ進むことは妨げません。";
+var wrap=$("pl-stages"); wrap.innerHTML="";
+for(var s3=1;s3<=5;s3++){ if(!score[s3]) continue;
+var row=document.createElement("div"); row.className="stage-row";
+row.innerHTML="<span>"+esc(STAGE_NAMES[s3])+"</span><span class=\"s-score\">"+score[s3].ok+" / "+score[s3].total+(fullCleared(s3)? " ・ クリア": passable(s3)? " ・ 進んでOK（穴は復習で回収）":" ・ 要ドリル")+"</span>";
+wrap.appendChild(row);
+}
+$("pl-base").textContent = baseOk>=2? "前半の素の文（He plays soccer.／She is busy.）は両方言えました。SVOの土台は「できそう」と判断します。詰まったら、土台ではなくチャンク側を疑ってください。":
+baseOk===1? "素の文は1問言えました。土台はおおむね「できそう」ですが、落とした型は第1週ドリルで補強しましょう。":
+"素の文がまだ作れませんでした。ランク以前に、まず第1週の現在形ドリルで土台を作るのが近道です。";
+var chunkOk = score[5]? score[5].ok: 0;
+$("pl-chunk").textContent = chunkOk>=1? "最後の as soon as の文も言えました。言い回しの塊も口から出る状態です。つなぐ編で種類を増やしましょう。":
+baseOk>=1? "素の文は作れるのに、as soon as の塊で止まりました。詰まりはチャンク側です。定番チャンクを、主語と動詞を変えながら何度も登場させて馴染ませます。":
+"チャンク以前に土台の段階です。塊は土台の一文が作れるようになってから、文の後ろへ足していきます。";
+refreshRankBox();
+}
+function refreshRankBox(){
+var box=$("rank-box");
+if(!placementResult){ box.style.display="none"; return;}
+box.style.display="";
+$("rank-name").textContent = placementResult.rank;
+var weakTxt = placementResult.weak.length? "弱い段階："+placementResult.weak.join("／"):"弱い段階は見つかりませんでした";
+$("rank-detail").textContent = "おすすめは「"+(placementResult.startWeek>=6||placementResult.startWeek===5? "つなぐ編": "第"+placementResult.startWeek+"週")+"」から。"+weakTxt+"。このランクは仮置きで、コースの結果で補正します。記録はJSONバックアップに含まれます。";
+renderWeeks();
+}
+function startPlacement(){
+var queue = PLACEMENT.map(function(p){ return QUESTION_MAP[p.id];}).filter(Boolean);
+startSession("実力テスト（10問）", queue, "placement");
+}
+function renderWeeks(){
+var list=$("week-list"); if(!list) return; list.innerHTML="";
+WEEKS.forEach(function(w){
+var n = QUESTIONS.filter(function(q){return q.week===w.n;}).length;
+var rec = placementResult && (placementResult.startWeek===w.n || (placementResult.startWeek>=6 && w.n===5));
+var b=document.createElement("button"); b.type="button";
+b.className="week-card"+(rec? " rec": "")+(w.main? " main-week": "");
+b.innerHTML="<span class=\"week-num\">"+(w.main? "つなぐ<br>編": "第<br>"+w.n+"週")+"</span><span><h3>"+esc(w.title)+"</h3><p>"+esc(w.sub)+"</p>"+(rec? "<span class=\"rec-tag\">★ あなたのおすすめ</span>": "")+"</span><span class=\"chev\" style=\"margin-left:auto;color:var(--ink2);font-size:20px\">›</span>";
+b.addEventListener("click", function(){ openCourse(w.n);});
+list.appendChild(b);
+});
+}
+function openCourse(week){
+courseState.week = week; courseState.scene="all"; courseState.count = settings.count;
+var w = WEEKS.filter(function(x){return x.n===week;})[0];
+$("course-title").textContent = w.title;
+$("course-sub").textContent = "焦点："+w.focus+" ／ 全"+QUESTIONS.filter(function(q){return q.week===week;}).length+"問。判定は甘めで、前倒しも自由です。";
+var sc=$("course-scenes"); sc.innerHTML="";
+SCENES.forEach(function(s){
+var n = s.key==="all"? QUESTIONS.filter(function(q){return q.week===week;}).length: QUESTIONS.filter(function(q){return q.week===week && q.scene===s.key;}).length;
+var b=document.createElement("button"); b.type="button"; b.textContent=s.label+"（"+n+"）";
+b.classList.toggle("sel", courseState.scene===s.key);
+b.addEventListener("click", function(){ courseState.scene=s.key; openCourseRefreshScenes();});
+sc.appendChild(b);
+});
+document.querySelectorAll("#course-count button").forEach(function(b){ b.classList.toggle("sel", Number(b.dataset.v)===courseState.count);});
+renderCoursePreview();
+show("scr-course");
+}
+function openCourseRefreshScenes(){
+document.querySelectorAll("#course-scenes button").forEach(function(b,i){ b.classList.toggle("sel", SCENES[i].key===courseState.scene);});
+renderCoursePreview();
+}
+function renderCoursePreview(){
+var pool = QUESTIONS.filter(function(q){return q.week===courseState.week && (courseState.scene==="all" || q.scene===courseState.scene);});
+var fams = {}; pool.forEach(function(q){ fams[q.family]=1;});
+$("course-preview").innerHTML = "<div class=\"empty-box\">この組み合わせの問題："+pool.length+"問 ／ 登場する文ファミリー："+Object.keys(fams).length+"種類<br>同じ動詞が別の週でどう化けるかは、週を変えて同じ編を選ぶと体験できます。</div>";
+}
+function buildCourseQueue(){
+var week=courseState.week, scene=courseState.scene, count=courseState.count;
+var inScene = QUESTIONS.filter(function(q){return q.week===week && (scene==="all" || q.scene===scene);});
+var rest = QUESTIONS.filter(function(q){return q.week===week && scene!=="all" && q.scene!==scene;});
+var pool = shuffleArr(inScene).concat(shuffleArr(rest));
+return pool.slice(0, Math.min(count, pool.length)).map(applyVariant);
+}
+function startCourse(){
+var w = WEEKS.filter(function(x){return x.n===courseState.week;})[0];
+var label = w.title + (courseState.scene==="all"? " ・ 全編": " ・ "+SCENE_LABEL[courseState.scene]);
+startSession(label, buildCourseQueue(), "course");
+}
+function layerStats(pred){
+var ids = {}; Object.keys(QUESTION_MAP).map(function(k){return QUESTION_MAP[k];}).filter(pred).forEach(function(q){ ids[q.id]=1;});
+var seen={}, att=0, ok=0;
+histLog.forEach(function(h){ if(h.attemptNumber!==1 || seen[h.questionId] || !ids[h.questionId]) return; seen[h.questionId]=1; att++; if(h.evaluationStatus==="accepted") ok++;});
+return {att:att, ok:ok, rate: att? ok/att: 0};
+}
+function renderDiagnosis(){
+var base = layerStats(function(q){return q.base;});
+var chunk = layerStats(function(q){return q.chunkIds && q.chunkIds.length>0;});
+$("diag-base-bar").style.width = Math.round(base.rate*100)+"%";
+$("diag-chunk-bar").style.width = Math.round(chunk.rate*100)+"%";
+$("diag-base-text").textContent = base.att===0? "まだデータがありません。実力テストか第1週ドリルを受けると判定できます。":
+"初回回答 "+base.ok+" / "+base.att+" 問が正解。"+(base.rate<0.5? "土台側で詰まっています。チャンクを増やす前に、前の週の現在形ドリルを復習に混ぜるのが先です。": "土台は安定しています。");
+$("diag-chunk-text").textContent = chunk.att===0? "まだデータがありません。つなぐ編や、チャンク入りの文に挑戦すると判定できます。":
+"初回回答 "+chunk.ok+" / "+chunk.att+" 問が正解。"+(chunk.rate<0.5 && base.rate>=0.5? "素の文は作れるのに塊で止まっています。詰まりはチャンク側です。そのチャンクの反復登場を厚くし、定番チャンク画面で例文を聞いてから戻りましょう。": chunk.rate<0.5? "土台とチャンクの両方に課題があります。まず土台から固めます。": "塊も繋げられています。");
+}
+function renderChunks(){
+var list=$("fchunk-list"); list.innerHTML="";
+FIXED_CHUNKS.forEach(function(c){
+var done = layerStats(function(q){return q.chunkIds && q.chunkIds.indexOf(c.id)>=0;});
+var div=document.createElement("div"); div.className="fchunk";
+div.innerHTML="<span class=\"fc-cat\">"+esc(c.cat)+"</span><div class=\"fc-en\">"+esc(c.en)+" <small style=\"font-weight:500;font-size:12px;color:var(--ink2)\">"+esc(c.ja)+" ／ 出会った文："+done.att+"問</small></div>"+
+c.ex.map(function(e){ return "<div class=\"fc-ex\">"+esc(e[0])+"<small>"+esc(e[1])+"</small></div>";}).join("");
+div.style.cursor="pointer";
+div.addEventListener("click", function(){ speak(c.ex[0][0]);});
+list.appendChild(div);
+});
+}
+function renderVerbs(){
+var wrap=$("verb-groups"); wrap.innerHTML="";
+[["SV","SV型 ・ 目的語なしで文が終わる"],["SVC","SVC型 ・ 補語（形容詞・名詞）が続く"],["SVO","SVO型 ・ 目的語を取る"],["特殊","特殊 ・ 固定表現として覚える"]].forEach(function(g){
+var list = VERB_LEDGER.filter(function(e){return e.t===g[0];});
+if(!list.length) return;
+var h=document.createElement("h3"); h.style.cssText="margin:20px 0 2px;font-size:15px"; h.textContent=g[1]+"（"+list.length+"語）"; wrap.appendChild(h);
+var t=document.createElement("table"); t.className="verb-table";
+t.innerHTML="<tr><th>動詞（原形・過去形・過去分詞）</th><th>型文</th><th>ドリル</th></tr>";
+list.forEach(function(e){
+var tr=document.createElement("tr");
+var exEn, exJa;
+if(e.gen){ var s0 = e.subs==="all"? "I": e.subs[0]; var g0=buildGen(e, s0, "a"); exEn=g0.en; exJa=g0.ja; }
+else { exEn=e.ex; exJa=e.exJa; }
+tr.innerHTML="<td><span class=\"vtype "+(e.t==="特殊"?"svc":e.t.toLowerCase())+"\">"+esc(e.t)+"</span> <b>"+esc(e.b)+"</b><br><small style=\"color:var(--ink2)\">"+esc(e.past)+" / "+esc(e.pp)+"</small></td><td>"+esc(exEn)+"<br><small style=\"color:var(--ink2)\">"+esc(exJa)+"</small></td><td>"+(e.gen? "特訓 ›": "固定")+"</td>";
+if(e.gen){ tr.style.cursor="pointer"; tr.addEventListener("click", function(){ drillState.verb=e.b; updateDrillUI(); show("scr-drill"); toast("動詞「"+e.b+"」の特訓です");});}
+else { tr.addEventListener("click", function(){ toast("「"+e.b+"」は固定表現として台帳に載せています（生成ドリルの対象外）");});}
+t.appendChild(tr);
+});
+wrap.appendChild(t);
+});
+}
+
+/* ============ v1.3 動詞台帳112語（生成ドリルの材料） ============ */
+/* 形式：[原形, 過去形, 過去分詞, 型, 英語の残り部分, 日本語の残り部分,
+   日本語の動詞（現在・過去・否定・現在完了）, 使える主語, 使えるパターン, 生成可否, 固定例文, その訳]
+   パターン文字：a=現在肯定 q=疑問・否定 p=過去 c=現在完了。主語 "all" は I/you/he/she/we/they。
+   英語の残り部分の {poss} は主語の所有格（my/your/his/her/our/their）に置換される。 */
+var VERB_LEDGER = [
+["be","was / were","been","SVC","busy","","忙しいです","忙しかったです","忙しくありません","","all","aqp"],
+["have","had","had","SVO","a car","車を","持っています","持っていました","持っていません","持ったことがあります"],
+["do","did","done","SVO","{poss} homework","宿題を","します","しました","しません","したことがあります"],
+["go","went","gone","SV","to school","学校へ","行きます","行きました","行きません","行ったことがあります"],
+["come","came","come","SV","here","ここへ","来ます","来ました","来ません","来たことがあります"],
+["visit","visited","visited","SVO","Kyoto","京都を","訪れます","訪れました","訪れません","訪れたことがあります"],
+["arrive","arrived","arrived","SV","at the station","駅に","着きます","着きました","着きません","着いたことがあります"],
+["leave","left","left","SV","at eight","8時に","出発します","出発しました","出発しません","出発したことがあります"],
+["get","got","got","SVO","a letter","手紙を","受け取ります","受け取りました","受け取りません","受け取ったことがあります"],
+["give","gave","given","SVO","my friend a gift","友達にプレゼントを","あげます","あげました","あげません","あげたことがあります"],
+["buy","bought","bought","SVO","a new bag","新しいかばんを","買います","買いました","買いません","買ったことがあります"],
+["sell","sold","sold","SVO","old books","古い本を","売ります","売りました","売りません","売ったことがあります"],
+["make","made","made","SVO","a cake","ケーキを","作ります","作りました","作りません","作ったことがあります"],
+["break","broke","broken","SVO","the rules","ルールを","破ります","破りました","破りません","破ったことがあります"],
+["know","knew","known","SVO","the answer","答えを","知っています","知っていました","知りません","","all","aqp"],
+["think","thought","thought","SVO","about it","それについて","考えます","考えました","考えません","考えたことがあります"],
+["guess","guessed","guessed","SVO","the answer","答えを","推測します","推測しました","推測しません","推測したことがあります"],
+["take","took","taken","SVO","a photo","写真を","撮ります","撮りました","撮りません","撮ったことがあります"],
+["bring","brought","brought","SVO","an umbrella","傘を","持ってきます","持ってきました","持ってきません","持ってきたことがあります"],
+["eat","ate","eaten","SVO","breakfast","朝食を","食べます","食べました","食べません","食べたことがあります"],
+["drink","drank","drunk","SVO","coffee","コーヒーを","飲みます","飲みました","飲みません","飲んだことがあります"],
+["sleep","slept","slept","SV","for eight hours","8時間","寝ます","寝ました","寝ません","寝たことがあります"],
+["spend","spent","spent","SVO","money","お金を","使います","使いました","使いません","使ったことがあります"],
+["meet","met","met","SVO","my friends","友達に","会います","会いました","会いません","会ったことがあります"],
+["see","saw","seen","SVO","the sea","海を","見ます","見ました","見ません","見たことがあります"],
+["look","looked","looked","SVC","tired","疲れて","見えます","見えました","見えません","見えたことがあります"],
+["watch","watched","watched","SVO","TV","テレビを","見ます","見ました","見ません","見たことがあります"],
+["say","said","said","SVO","hello","こんにちはと","言います","言いました","言いません","言ったことがあります"],
+["tell","told","told","SVO","the truth","本当のことを","言います","言いました","言いません","言ったことがあります"],
+["speak","spoke","spoken","SVO","English","英語を","話します","話しました","話しません","話したことがあります"],
+["talk","talked","talked","SV","with my friends","友達と","話します","話しました","話しません","話したことがあります"],
+["hear","heard","heard","SVO","a strange sound","変な音が","聞こえます","聞こえました","聞こえません","聞こえたことがあります"],
+["listen","listened","listened","SV","to music","音楽を","聞きます","聞きました","聞きません","聞いたことがあります"],
+["ask","asked","asked","SVO","a question","質問を","します","しました","しません","したことがあります"],
+["answer","answered","answered","SVO","the question","質問に","答えます","答えました","答えません","答えたことがあります"],
+["teach","taught","taught","SVO","English","英語を","教えます","教えました","教えません","教えたことがあります"],
+["want","wanted","wanted","SVO","a new phone","新しいスマホが","ほしいです","ほしかったです","ほしくありません","","all","aqp"],
+["use","used","used","SVO","this app","このアプリを","使います","使いました","使いません","使ったことがあります"],
+["find","found","found","SVO","{poss} keys","鍵を","見つけます","見つけました","見つけません","見つけたことがあります"],
+["work","worked","worked","SV","at a hospital","病院で","働きます","働きました","働きません","働いたことがあります"],
+["call","called","called","SVO","my mother","母に","電話します","電話しました","電話しません","電話したことがあります"],
+["try","tried","tried","SVO","this tea","このお茶を","試します","試しました","試しません","試したことがあります"],
+["need","needed","needed","SVO","more time","もっと時間が","必要です","必要でした","必要ありません","","all","aqp"],
+["feel","felt","felt","SVC","better","気分が","いいです","よかったです","よくありません","","all","aqp"],
+["become","became","become","SVC","a teacher","先生に","なります","なりました","なりません","なったことがあります"],
+["put","put","put","SVO","the book on the desk","机の上に本を","置きます","置きました","置きません","置いたことがあります"],
+["pick","picked","picked","SVO","it up","それを","拾います","拾いました","拾いません","拾ったことがあります"],
+["touch","touched","touched","SVO","the screen","画面を","触ります","触りました","触りません","触ったことがあります"],
+["mean","meant","meant","SVO","it","","本気です","本気でした","本気ではありません","","all","aqp"],
+["mind","minded","minded","特殊","","","","","","","all","",0,"Do you mind if I sit here?","ここに座ってもいいですか。"],
+["let","let","let","特殊","","","","","","","all","",0,"Let me help you.","手伝わせてください。"],
+["start","started","started","SVO","the game","試合を","始めます","始めました","始めません","始めたことがあります"],
+["finish","finished","finished","SVO","{poss} homework","宿題を","終えます","終えました","終えません","終えたことがあります"],
+["stop","stopped","stopped","SV","","","止まります","止まりました","止まりません","止まったことがあります"],
+["seem","seemed","seemed","SVC","fine","元気","そうです","そうでした","そうではありません","","all","aqp"],
+["help","helped","helped","SVO","my mother","母を","手伝います","手伝いました","手伝いません","手伝ったことがあります"],
+["happen","happened","happened","SV","","そんなことが","あります","ありました","","",["it"],"ap"],
+["turn","turned","turned","SV","left","左に","曲がります","曲がりました","曲がりません","曲がったことがあります"],
+["show","showed","shown","SVO","this photo","この写真を","見せます","見せました","見せません","見せたことがあります"],
+["play","played","played","SVO","soccer","サッカーを","します","しました","しません","したことがあります"],
+["walk","walked","walked","SV","to school","学校まで","歩きます","歩きました","歩きません","歩いたことがあります"],
+["run","ran","run","SV","","毎朝","走ります","走りました","走りません","走ったことがあります"],
+["drive","drove","driven","SVO","a car","車を","運転します","運転しました","運転しません","運転したことがあります"],
+["move","moved","moved","SV","to Tokyo","東京へ","引っ越します","引っ越しました","引っ越しません","引っ越したことがあります"],
+["carry","carried","carried","SVO","a heavy bag","重いかばんを","運びます","運びました","運びません","運んだことがあります"],
+["live","lived","lived","SV","in Tokyo","東京に","住んでいます","住んでいました","住んでいません","住んだことがあります"],
+["hold","held","held","SVO","an umbrella","傘を","持ちます","持ちました","持ちません","持ったことがあります"],
+["keep","kept","kept","SVO","a diary","日記を","つけます","つけました","つけません","つけたことがあります"],
+["read","read","read","SVO","a book","本を","読みます","読みました","読みません","読んだことがあります"],
+["write","wrote","written","SVO","an email","メールを","書きます","書きました","書きません","書いたことがあります"],
+["sit","sat","sat","SV","on the chair","椅子に","座ります","座りました","座りません","座ったことがあります"],
+["stand","stood","stood","SV","","","立ちます","立ちました","立ちません","立ったことがあります"],
+["lose","lost","lost","SVO","the game","試合に","負けます","負けました","負けません","負けたことがあります"],
+["win","won","won","SVO","the game","試合に","勝ちます","勝ちました","勝ちません","勝ったことがあります"],
+["catch","caught","caught","SVO","the ball","ボールを","捕まえます","捕まえました","捕まえません","捕まえたことがあります"],
+["miss","missed","missed","SVO","the bus","バスに","乗り遅れます","乗り遅れました","乗り遅れません","乗り遅れたことがあります"],
+["push","pushed","pushed","SVO","the door","ドアを","押します","押しました","押しません","押したことがあります"],
+["pull","pulled","pulled","SVO","the door","ドアを","引きます","引きました","引きません","引いたことがあります"],
+["set","set","set","SVO","an alarm","アラームを","セットします","セットしました","セットしません","セットしたことがあります"],
+["study","studied","studied","SVO","English","英語を","勉強します","勉強しました","勉強しません","勉強したことがあります"],
+["learn","learned","learned","SVO","English","英語を","学びます","学びました","学びません","学んだことがあります"],
+["change","changed","changed","SV","","","変わります","変わりました","変わりません","変わったことがあります"],
+["understand","understood","understood","SVO","English","英語が","分かります","分かりました","分かりません","","all","aqp"],
+["follow","followed","followed","SVO","the rules","ルールを","守ります","守りました","守りません","守ったことがあります"],
+["open","opened","opened","SVO","the window","窓を","開けます","開けました","開けません","開けたことがあります"],
+["close","closed","closed","SVO","the window","窓を","閉めます","閉めました","閉めません","閉めたことがあります"],
+["cook","cooked","cooked","SVO","dinner","夕食を","作ります","作りました","作りません","作ったことがあります"],
+["wash","washed","washed","SVO","{poss} hands","手を","洗います","洗いました","洗いません","洗ったことがあります"],
+["clean","cleaned","cleaned","SVO","{poss} room","部屋を","掃除します","掃除しました","掃除しません","掃除したことがあります"],
+["remember","remembered","remembered","SVO","{poss} name","名前を","覚えています","思い出しました","覚えていません","","all","aqp"],
+["forget","forgot","forgotten","SVO","{poss} name","名前を","忘れます","忘れました","忘れません","忘れたことがあります"],
+["like","liked","liked","SVO","music","音楽が","好きです","好きでした","好きではありません","","all","aqp"],
+["love","loved","loved","SVO","music","音楽が","大好きです","大好きでした","大好きではありません","","all","aqp"],
+["hate","hated","hated","SVO","music","音楽が","嫌いです","嫌いでした","嫌いではありません","","all","aqp"],
+["wait","waited","waited","SV","for the bus","バスを","待ちます","待ちました","待ちません","待ったことがあります"],
+["hurry","hurried","hurried","SV","","","急ぎます","急ぎました","急ぎません","急いだことがあります"],
+["die","died","died","SV","","","","亡くなりました","","亡くなったことがあります","all","p"],
+["send","sent","sent","SVO","an email","メールを","送ります","送りました","送りません","送ったことがあります"],
+["build","built","built","SVO","a house","家を","建てます","建てました","建てません","建てたことがあります"],
+["stay","stayed","stayed","SV","at home","家に","います","いました","いません","いたことがあります"],
+["fall","fell","fallen","SV","down","","転びます","転びました","転びません","転んだことがあります"],
+["cut","cut","cut","SVO","the paper","紙を","切ります","切りました","切りません","切ったことがあります"],
+["reach","reached","reached","SVO","the station","駅に","着きます","着きました","着きません","着いたことがあります"],
+["pass","passed","passed","SVO","the test","試験に","合格します","合格しました","合格しません","合格したことがあります"],
+["decide","decided","decided","SVO","to stay home","家にいることに","決めます","決めました","決めません","決めたことがあります"],
+["hope","hoped","hoped","SVO","to see you again","また会えることを","願います","願いました","願いません","願ったことがあります"],
+["agree","agreed","agreed","SV","with you","あなたに","賛成します","賛成しました","賛成しません","賛成したことがあります"],
+["support","supported","supported","SVO","my family","家族を","支えます","支えました","支えません","支えたことがあります"],
+["hit","hit","hit","SVO","the ball","ボールを","打ちます","打ちました","打ちません","打ったことがあります"],
+["thank","thanked","thanked","特殊","","","","","","","all","",0,"Thank you for your help.","手伝ってくれてありがとうございます。"],
+["invite","invited","invited","SVO","my friends","友達を","招待します","招待しました","招待しません","招待したことがあります"],
+["wake","woke","woken","SV","up at six","6時に","起きます","起きました","起きません","起きたことがあります"]
+].map(function(a){
+return {b:a[0], past:a[1], pp:a[2], t:a[3], r:a[4], jr:a[5], jv:[a[6],a[7],a[8],a[9]],
+subs:(a[10]===undefined? "all": a[10]), pats:(a[11]===undefined? "aqpc": a[11]),
+gen:a[12]!==0, ex:a[13]||"", exJa:a[14]||""};
+});
+var LEDGER_MAP = {}; VERB_LEDGER.forEach(function(e){ LEDGER_MAP[e.b]=e; });
+/* 甘め判定の -s マップにも台帳の動詞を足す */
+VERB_LEDGER.forEach(function(e){ if(e.b==="be") return; var f=sFormOf(e.b); if(f!==e.b && !SFOR_MAP[f]) SFOR_MAP[f]=e.b; });
+function sFormOf(v){
+if(v==="have") return "has"; if(v==="do") return "does";
+if(/(s|x|z|ch|sh|o)$/.test(v)) return v+"es";
+if(/[^aeiou]y$/.test(v)) return v.slice(0,-1)+"ies";
+return v+"s";
+}
+
+/* ============ v1.3 生成エンジン：動詞 × 主語 × 形 ============ */
+var GEN_SUBJ = {
+"I":{en:"I", ja:"私は", be:"am", beCap:"Am", bePast:"was", third:false, poss:"my", ctr:"I'm", ctrH:"I've"},
+"you":{en:"You", ja:"あなたは", be:"are", beCap:"Are", bePast:"were", third:false, poss:"your", ctr:"You're", ctrH:"You've"},
+"he":{en:"He", ja:"彼は", be:"is", beCap:"Is", bePast:"was", third:true, poss:"his", ctr:"He's", ctrH:"He's"},
+"she":{en:"She", ja:"彼女は", be:"is", beCap:"Is", bePast:"was", third:true, poss:"her", ctr:"She's", ctrH:"She's"},
+"we":{en:"We", ja:"私たちは", be:"are", beCap:"Are", bePast:"were", third:false, poss:"our", ctr:"We're", ctrH:"We've"},
+"they":{en:"They", ja:"彼らは", be:"are", beCap:"Are", bePast:"were", third:false, poss:"their", ctr:"They're", ctrH:"They've"},
+"it":{en:"It", ja:"", be:"is", beCap:"Is", bePast:"was", third:true, poss:"its", ctr:"It's", ctrH:"It's"}
+};
+var ALL_SUBJ = ["I","you","he","she","we","they"];
+var PAT_LABEL = {a:"現在形", q:"疑問文", neg:"否定文", p:"過去形", c:"現在完了"};
+function buildGen(e, sk, pat){
+var S = GEN_SUBJ[sk];
+var enLow = sk==="I"? "I": S.en.toLowerCase();
+var rest = e.r.replace("{poss}", S.poss);
+var restSp = rest? " "+rest: "";
+var en="", acc=[], c1="", structure="";
+var jvIdx = {a:0, p:1, neg:2, c:3}[pat];
+if(e.b==="be"){
+if(pat==="a"){ en=S.en+" "+S.be+restSp+"."; acc=[S.ctr+restSp+"."]; c1=S.en+" "+S.be; structure="S + "+S.be+"（be動詞）+ 補語"; }
+else if(pat==="neg"){ en=S.en+" "+S.be+" not"+restSp+"."; c1=S.en+" "+S.be+" not"; structure="S + "+S.be+" not + 補語";
+if(S.be==="am") acc=[S.ctr+" not"+restSp+"."];
+else acc=[S.en+" "+(S.be==="is"?"isn't":"aren't")+restSp+".", S.ctr+" not"+restSp+"."]; }
+else if(pat==="q"){ en=S.beCap+" "+enLow+restSp+"?"; c1=S.beCap+" "+enLow; structure=S.beCap+" + S + 補語 …?（be動詞の疑問）"; }
+else if(pat==="p"){ en=S.en+" "+S.bePast+restSp+"."; c1=S.en+" "+S.bePast; structure="S + "+S.bePast+"（be動詞の過去形）+ 補語"; }
+}else{
+if(pat==="a"){ var vf = S.third? sFormOf(e.b): e.b; en=S.en+" "+vf+restSp+"."; c1=S.en+" "+vf; structure= S.third? "S + "+vf+"（三単現の -s）+ …": "S + 動詞の原形（"+e.b+"）+ …"; }
+else if(pat==="neg"){ var auxN = S.third? "doesn't":"don't"; en=S.en+" "+auxN+" "+e.b+restSp+"."; acc=[S.en+" "+(S.third? "does not":"do not")+" "+e.b+restSp+"."]; c1=S.en+" "+auxN+" "+e.b; structure="S + "+auxN+" + 動詞の原形（-s は doesn't / don't 側へ）"; }
+else if(pat==="q"){ var auxQ = S.third? "Does":"Do"; en=auxQ+" "+enLow+" "+e.b+restSp+"?"; c1=auxQ+" "+enLow+" "+e.b; structure=auxQ+" + S + 動詞の原形 …?"; }
+else if(pat==="p"){ en=S.en+" "+e.past+restSp+"."; c1=S.en+" "+e.past; structure="S + 過去形（"+e.past+"）+ …"; }
+else if(pat==="c"){ var auxH = S.third? "has":"have"; en=S.en+" "+auxH+" "+e.pp+restSp+"."; acc=[S.ctrH+" "+e.pp+restSp+"."]; c1=S.en+" "+auxH+" "+e.pp; structure="S + "+auxH+" + 過去分詞（"+e.pp+"）"; }
+}
+var ja;
+if(pat==="q") ja = S.ja + e.jr + e.jv[0] + "か。";
+else ja = S.ja + e.jr + e.jv[jvIdx] + "。";
+var chunks=[{en:c1, ja:(S.ja + e.jv[pat==="q"? 0: jvIdx])}];
+if(rest && e.jr) chunks.push({en:rest, ja:e.jr});
+var hintJoined = chunks.map(function(c){return c.en;}).join(" / ");
+return {en:en, ja:ja, acc:acc, chunks:chunks, structure:structure, hintJoined:hintJoined};
+}
+function genQuestion(e, sk, pat){
+var g = buildGen(e, sk, pat);
+var s0 = e.subs==="all"? "I": e.subs[0];
+var baseEn = buildGen(e, s0, "a").en;
+var q = {
+id:"GEN-"+e.b+"-"+sk+"-"+pat, level:1,
+tense: pat==="p"? "past": pat==="c"? "pp-exp": "present",
+pattern:"gen-"+pat, verb:e.b, week:0, scene:"daily", family:"gen-"+e.b, base:true, chunkIds:[],
+promptJa:g.ja,
+contextJa:"動詞ドリル（特訓）：動詞は "+e.b+"、主語は "+GEN_SUBJ[sk].en+"、形は「"+PAT_LABEL[pat]+"」です。",
+primaryAnswer:g.en,
+acceptedAnswers:[g.en].concat(g.acc),
+chunks:g.chunks,
+hints:{structure:g.structure, pattern:g.hintJoined, full:g.hintJoined},
+explanation:"生成ドリル：動詞 "+e.b+"（過去形 "+e.past+" ・ 過去分詞 "+e.pp+"）を、主語 "+GEN_SUBJ[sk].en+" ・ "+PAT_LABEL[pat]+" で組み立てました。台帳の型文は「"+baseEn+"」です。主語が変わると be動詞・三単現の -s・do/does・have/has・所有格が連動します。"
+};
+QUESTION_MAP[q.id]=q;
+return q;
+}
+
+/* ============ v1.3 動詞ドリル（特訓） ============ */
+var drillState = {level:2, verb:null};
+var DRILL_LEVEL_PATS = {1:["a"], 2:["a","q"], 3:["a","q","p"], 4:["a","q","p","c"]};
+var DRILL_LEVEL_NAMES = {1:"現在形のみ", 2:"疑問・否定も", 3:"過去形も", 4:"現在完了も"};
+function countCombos(verb, level){
+var total=0;
+VERB_LEDGER.forEach(function(e){
+if(!e.gen) return;
+if(verb && e.b!==verb) return;
+var lp = DRILL_LEVEL_PATS[level];
+var n=0;
+lp.forEach(function(p){ if(e.pats.indexOf(p)<0) return; n += (p==="q"? 2: 1); });
+if(n===0) e.pats.split("").forEach(function(p){ n += (p==="q"? 2: 1); });
+var subs = e.subs==="all"? ALL_SUBJ.length: e.subs.length;
+total += subs*n;
+});
+return total;
+}
+function buildDrillQueue(){
+var entries = VERB_LEDGER.filter(function(e){ return e.gen && (!drillState.verb || e.b===drillState.verb); });
+var out=[], lastVerb=null, lastSubj=null, guard=0;
+while(out.length<10 && guard<600){
+guard++;
+var e = entries[Math.floor(Math.random()*entries.length)];
+if(entries.length>1 && e.b===lastVerb) continue;
+var lp = DRILL_LEVEL_PATS[drillState.level].filter(function(p){ return e.pats.indexOf(p)>=0; });
+if(!lp.length) lp = e.pats.split("");
+var pk = lp[Math.floor(Math.random()*lp.length)];
+if(pk==="q") pk = Math.random()<0.5? "q": "neg";
+var subs = e.subs==="all"? ALL_SUBJ: e.subs;
+var sk = subs[Math.floor(Math.random()*subs.length)];
+if(subs.length>1 && sk===lastSubj) continue;
+out.push(genQuestion(e, sk, pk));
+lastVerb=e.b; lastSubj=sk;
+}
+return out;
+}
+function updateDrillUI(){
+document.querySelectorAll("#drill-level button").forEach(function(b){ b.classList.toggle("sel", Number(b.dataset.v)===drillState.level); });
+$("drill-verb-name").textContent = drillState.verb? drillState.verb+"（この動詞だけ）": "ランダム（全動詞）";
+$("btn-drill-random").style.display = drillState.verb? "": "none";
+$("drill-combo").textContent = "出題できる組み合わせ：約"+countCombos(drillState.verb, drillState.level).toLocaleString()+"通り（動詞"+(drillState.verb? "1語": VERB_LEDGER.filter(function(e){return e.gen;}).length+"語")+" × 主語 × 形）";
+}
+$("btn-drill").addEventListener("click", function(){ updateDrillUI(); show("scr-drill"); });
+document.querySelectorAll("#drill-level button").forEach(function(b){
+b.addEventListener("click", function(){ drillState.level=Number(b.dataset.v); updateDrillUI(); });
+});
+$("btn-drill-pick").addEventListener("click", function(){ renderVerbs(); show("scr-verbs"); });
+$("btn-drill-random").addEventListener("click", function(){ drillState.verb=null; updateDrillUI(); });
+$("btn-drill-start").addEventListener("click", function(){
+var label = "動詞ドリル ・ "+DRILL_LEVEL_NAMES[drillState.level]+(drillState.verb? " ・ "+drillState.verb+" 特訓": "");
+startSession(label, buildDrillQueue(), "drill");
+});
+if($("combo-count")) $("combo-count").textContent = "約"+countCombos(null, 4).toLocaleString();
+updateDrillUI();
+
+/* ============ イベント ============ */
+document.querySelectorAll("[data-mode]").forEach(function(b){
+b.addEventListener("click", function(){
+var mode=b.dataset.mode;
+if(mode==="shuffle"){ pickState.count=settings.count; startSession("シャッフル", buildQueue("shuffle"));}
+else if(mode==="weak"){
+pickState.count=settings.count;
+if(!weakQuestionIds().length){ toast("復習対象がまだありません。まずは通常の練習で記録を作りましょう。通常問題から出題します。");}
+startSession("苦手を復習", buildQueue("weak"));
+}
+else openPick(mode);
+});
+});
+document.querySelectorAll("#pick-count button").forEach(function(b){
+b.addEventListener("click", function(){
+pickState.count=Number(b.dataset.v);
+document.querySelectorAll("#pick-count button").forEach(function(x){x.classList.toggle("sel", x===b);});
+});
+});
+document.querySelectorAll("[data-back='home']").forEach(function(b){ b.addEventListener("click", function(){ show("scr-home");});});
+$("btn-goto-records").addEventListener("click", function(){ renderRecords(); show("scr-records");});
+$("btn-placement").addEventListener("click", startPlacement);
+$("btn-rank-start").addEventListener("click", function(){ openCourse(placementResult? Math.min(placementResult.startWeek,5): 1);});
+$("btn-pl-start").addEventListener("click", function(){ openCourse(placementResult? Math.min(placementResult.startWeek,5): 1);});
+$("btn-pl-week1").addEventListener("click", function(){ openCourse(1);});
+$("btn-goto-chunks").addEventListener("click", function(){ renderChunks(); show("scr-chunks");});
+$("btn-goto-verbs").addEventListener("click", function(){ renderVerbs(); show("scr-verbs");});
+$("btn-course-start").addEventListener("click", startCourse);
+document.querySelectorAll("#course-count button").forEach(function(b){
+b.addEventListener("click", function(){ courseState.count=Number(b.dataset.v); document.querySelectorAll("#course-count button").forEach(function(x){x.classList.toggle("sel", x===b);});});
+});
+$("btn-goto-settings").addEventListener("click", function(){ show("scr-settings");});
+$("btn-home-settings").addEventListener("click", function(){ show("scr-settings");});
+$("btn-quit").addEventListener("click", function(){ if(listening && recog){ try{recog.stop();}catch(e){}} show("scr-home");});
+$("btn-mic").addEventListener("click", startRecognition);
+$("btn-hint").addEventListener("click", showHint);
+$("btn-skip").addEventListener("click", skipQuestion);
+$("btn-text-toggle").addEventListener("click", function(){ $("text-zone").classList.toggle("on");});
+$("btn-text-submit").addEventListener("click", function(){
+var t=$("text-answer").value.trim();
+if(!t){ toast("英文を入力してください"); return;}
+submitAnswer(t, "text");
+});
+$("btn-next").addEventListener("click", nextQuestion);
+$("btn-retry").addEventListener("click", retryQuestion);
+$("tg-normal").addEventListener("click", function(){ setModelView("normal");});
+$("tg-chunk").addEventListener("click", function(){ setModelView("chunk");});
+$("btn-listen-full").addEventListener("click", function(){ speak(currentQ().primaryAnswer);});
+$("btn-listen-chunks").addEventListener("click", function(){ speakChunks(currentQ());});
+$("btn-ai").addEventListener("click", function(){ $("ai-text").value=buildAiText(); $("ai-box").classList.add("on");});
+$("btn-copy-ai").addEventListener("click", function(){
+var ta=$("ai-text"); ta.select();
+function done(){ toast("質問文をコピーしました");}
+if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done, function(){ document.execCommand("copy"); done();});}
+else { document.execCommand("copy"); done();}
+});
+$("btn-register-answer").addEventListener("click", function(){
+var q=currentQ(), your=$("r-your").textContent.trim();
+if(!your) return;
+if(evaluate(q, your)==="accepted"){ toast("すでに正解として登録されています"); return;}
+(userAnswers[q.id] = userAnswers[q.id]||[]).push(your);
+toast("あなたの回答を、この問題の正解として登録しました");
+});
+$("btn-again").addEventListener("click", function(){ show("scr-home");});
+$("btn-export").addEventListener("click", exportJson);
+$("import-file").addEventListener("change", function(){ if(this.files && this.files[0]) importJson(this.files[0]); this.value="";});
+$("btn-reset").addEventListener("click", function(){
+if($("btn-reset").dataset.armed){ histLog=[]; userAnswers={}; placementResult=null; refreshRankBox(); delete $("btn-reset").dataset.armed; $("btn-reset").textContent="学習記録をすべて消す"; renderRecords(); refreshHomeStats(); toast("学習記録を消しました"); show("scr-home");}
+else { $("btn-reset").dataset.armed="1"; $("btn-reset").textContent="本当に消しますか？ もう一度押すと消去します";}
+});
+
+/* 初期化 */
+if(!SR){ $("sr-note").textContent="このブラウザは音声認識に対応していないため、回答はテキスト入力で練習できます。お手本の音声再生は利用できます。";}
+bindSettings(); syncSettingUI(); refreshHomeStats(); renderWeeks();
+</script>
+</body>
+</html>
